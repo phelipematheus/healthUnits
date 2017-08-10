@@ -68,7 +68,7 @@
         android:layout_alignBaseline="@+id/naoPossuiConta"
         android:layout_alignBottom="@+id/naoPossuiConta"
         android:layout_toEndOf="@+id/naoPossuiConta"
-        android:onClick="abreCadastro"/>
+        />
 
     <TextView
         android:id="@+id/esqueceuSenha"

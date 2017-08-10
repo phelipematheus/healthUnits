@@ -1,5 +1,7 @@
 package com.projetomobile.jpm.healthunits;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -16,7 +18,7 @@ public class TelaLogin extends AppCompatActivity {
     TextView txtCadastro,txtEsqueciSenha;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tela_login);
 
@@ -26,33 +28,34 @@ public class TelaLogin extends AppCompatActivity {
         btnEntrar = (Button)findViewById(R.id.botaoEntrar);
         txtEsqueciSenha = (TextView)findViewById(R.id.cliqueAqui);
 
-        Button x = (Button) findViewById(R.id.botaoEntrar);
-        x.setOnClickListener(new View.OnClickListener() {
+        btnEntrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent secondActivity = new Intent(TelaLogin.this,TelaCadastro.class);
+                startActivity(secondActivity);
             }
         });
     }
 
     public void abreCadastro(View view){
-        setContentView((R.layout.tela_cadastro));
+
+        //setContentView((R.layout.tela_cadastro));
     }
 
     public void abreEsqueciSenha(View view){
-        setContentView(R.layout.tela_esqueci_senha);
+        //setContentView(R.layout.tela_esqueci_senha);
     }
 
     public void abreLogin(View view){
-        setContentView(R.layout.tela_login);
+        //setContentView(R.layout.tela_login);
     }
 
     public void abreMapa(View view){
-        setContentView(R.layout.tela_mapa);
+        //setContentView(R.layout.tela_mapa);
     }
 
     public void abreSearchFilter(View view){
-        setContentView(R.layout.tela_search_filter);
+        //setContentView(R.layout.tela_search_filter);
     }
 
 }

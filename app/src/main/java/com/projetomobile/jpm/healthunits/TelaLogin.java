@@ -25,7 +25,15 @@ public class TelaLogin extends AppCompatActivity {
         editSenha = (EditText)findViewById(R.id.senhaEdit);
         btnEntrar = (Button)findViewById(R.id.botaoEntrar);
         txtEsqueciSenha = (TextView)findViewById(R.id.cliqueAqui);
+        /*Exemplo aula de hoje
+        Button x = (Button) findViewById(R.id.botaoEntrar);
+        x.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+            }
+        });
+        Fim do exemplo*/
     }
 
     public void abreCadastro(View view){

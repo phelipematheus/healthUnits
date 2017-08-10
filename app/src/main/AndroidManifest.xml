@@ -39,9 +39,6 @@
             android:name=".TelaMaps"
             android:label="@string/title_activity_maps" />
         <activity android:name=".TelaCadastro" />
-        <activity
-            android:name=".TelaMaps"
-            android:label="@string/title_activity_maps"></activity>
     </application>
 
 </manifest>

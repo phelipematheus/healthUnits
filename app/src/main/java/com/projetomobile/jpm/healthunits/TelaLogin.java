@@ -1,6 +1,5 @@
 package com.projetomobile.jpm.healthunits;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -36,7 +35,7 @@ public class TelaLogin extends AppCompatActivity {
 
     }
 
-    public void chamaCadastro(){
+    private void chamaCadastro(){
         txtCadastro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -46,7 +45,7 @@ public class TelaLogin extends AppCompatActivity {
         });
     }
 
-    public void chamaEsqueciSenha(){
+    private void chamaEsqueciSenha(){
         txtEsqueciSenha.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -56,7 +55,7 @@ public class TelaLogin extends AppCompatActivity {
         });
     }
 
-    public void chamaSearchFilter(){
+    private void chamaSearchFilter(){
         btnEntrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

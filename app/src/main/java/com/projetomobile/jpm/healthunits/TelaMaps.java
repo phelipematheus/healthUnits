@@ -1,7 +1,11 @@
 package com.projetomobile.jpm.healthunits;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -13,6 +17,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class TelaMaps extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    EditText editPesquisar;
+    Button btnAlterarFiltros;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,8 +28,24 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        //Criando todos as views da tela que tem id
+        editPesquisar = (EditText)findViewById(R.id.pesquisarEdit);
+        btnAlterarFiltros = (Button)findViewById(R.id.botaoAlterarFiltros);
+
+        //Início da chamada de tela caso tenha
+        this.chamaSearchFilter();
     }
 
+    private void chamaSearchFilter(){
+        btnAlterarFiltros.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent callTelaSearchFilter = new Intent(TelaMaps.this,TelaSearchFilter.class);
+                startActivity(callTelaSearchFilter);
+            }
+        });
+    }
 
     /**
      * Manipulates the map once available.

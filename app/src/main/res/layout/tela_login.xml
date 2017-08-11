@@ -43,8 +43,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:background="@drawable/rounded_button_green"
-        android:textColor="@android:color/white"
-        android:onClick="abreSearchFilter"/>
+        android:textColor="@android:color/white" />
 
     <TextView
         android:id="@+id/naoPossuiConta"
@@ -90,8 +89,7 @@
         android:linksClickable="true"
         android:layout_alignBaseline="@+id/esqueceuSenha"
         android:layout_toEndOf="@+id/esqueceuSenha"
-        android:textColor="#c50033ff"
-        android:onClick="abreEsqueciSenha" />
+        android:textColor="#c50033ff"         />
 
     <ImageView
         android:id="@+id/entreFacebook"

@@ -12,11 +12,12 @@
         />
 
     <EditText
+        android:id="@+id/editPesquisarSearch"
         android:layout_width="wrap_content"
         android:layout_height="35dp"
-        android:hint="Pesquisar pelo nome do hospital"
+        android:layout_marginLeft="59dp"
         android:background="@drawable/rounded_edittext"
-        android:layout_marginLeft="59dp"/>
+        android:hint="Pesquisar pelo nome do hospital" />
     <Space
         android:layout_width="match_parent"
         android:layout_height="10dp" />
@@ -24,13 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Instituição :"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="15dp"
-            android:textSize="18sp"/>
+
         <RadioGroup
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -39,15 +34,23 @@
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Privada"
-                android:layout_marginLeft="70dp"/>
+                android:layout_marginLeft="70dp"
+                android:text="Privada" />
 
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Pública"
-                android:layout_marginLeft="20dp"/>
+                android:layout_marginLeft="20dp"
+                android:text="Pública" />
         </RadioGroup>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Instituição :"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="15dp"
+            android:textSize="18sp"/>
     </LinearLayout>
 
     <Space
@@ -145,12 +148,13 @@
     <Space
         android:layout_width="match_parent"
         android:layout_height="30dp" />
+
     <Button
+        android:id="@+id/botaoBuscar"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="90dp"
         android:background="@drawable/rounded_button_green"
-        android:text="BUSCAR"
-        android:onClick="abreMapa"/>
+        android:text="BUSCAR" />
 
 </LinearLayout>

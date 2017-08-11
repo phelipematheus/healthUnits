@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 
 public class TelaCadastro extends AppCompatActivity{
     //Testando git no android studio
-
+    @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tela_cadastro);

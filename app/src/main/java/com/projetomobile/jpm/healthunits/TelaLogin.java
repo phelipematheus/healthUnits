@@ -22,40 +22,48 @@ public class TelaLogin extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tela_login);
 
+        //Criando todos as views da tela que tem id
         txtCadastro = (TextView)findViewById(R.id.cadastreSe);
         editEmail = (EditText)findViewById(R.id.emailEdit);
         editSenha = (EditText)findViewById(R.id.senhaEdit);
         btnEntrar = (Button)findViewById(R.id.botaoEntrar);
         txtEsqueciSenha = (TextView)findViewById(R.id.cliqueAqui);
 
-        btnEntrar.setOnClickListener(new View.OnClickListener() {
+        //Início da chamada de tela caso tenha
+        this.chamaCadastro();
+        this.chamaEsqueciSenha();
+        this.chamaSearchFilter();
+
+    }
+
+    public void chamaCadastro(){
+        txtCadastro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent secondActivity = new Intent(TelaLogin.this,TelaCadastro.class);
-                startActivity(secondActivity);
+                Intent callTelaCadastro = new Intent(TelaLogin.this,TelaCadastro.class);
+                startActivity(callTelaCadastro);
             }
         });
     }
 
-    public void abreCadastro(View view){
-
-        //setContentView((R.layout.tela_cadastro));
+    public void chamaEsqueciSenha(){
+        txtEsqueciSenha.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent callTelaEsqueciSenha = new Intent(TelaLogin.this,TelaEsqueciSenha.class);
+                startActivity(callTelaEsqueciSenha);
+            }
+        });
     }
 
-    public void abreEsqueciSenha(View view){
-        //setContentView(R.layout.tela_esqueci_senha);
-    }
-
-    public void abreLogin(View view){
-        //setContentView(R.layout.tela_login);
-    }
-
-    public void abreMapa(View view){
-        //setContentView(R.layout.tela_mapa);
-    }
-
-    public void abreSearchFilter(View view){
-        //setContentView(R.layout.tela_search_filter);
+    public void chamaSearchFilter(){
+        btnEntrar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent callTelaSearchFilter = new Intent(TelaLogin.this,TelaSearchFilter.class);
+                startActivity(callTelaSearchFilter);
+            }
+        });
     }
 
 }

@@ -3,6 +3,23 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"        >
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:layout_weight="0.05">
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:stretchColumns="1">
+
+
     <ImageView
         android:id="@+id/img_esqueci_senha"
         android:layout_width="match_parent"
@@ -13,65 +30,92 @@
         android:layout_alignParentTop="true"
         android:src="@drawable/img_esqueci_senha" />
 
-    <TextView
-        android:id="@+id/txt_view_esqueci_senha"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="25dp"
-        android:text="Esqueci a senha"
-        android:textStyle="bold"
-        android:fontFamily="sans-serif"
-        android:layout_below="@+id/img_esqueci_senha"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="8dp" />
+            <TextView
+                android:id="@+id/txt_view_esqueci_senha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/img_esqueci_senha"
+                android:layout_centerHorizontal="true"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="30dp"
+                android:fontFamily="sans-serif"
+                android:text="Esqueci a senha"
+                android:textSize="25dp"
+                android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/txt_view_vamos_enviar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20dp"
-        android:text="Vamos mandar um e-mail para a mudança da senha."
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_below="@+id/txt_view_esqueci_senha"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="31dp" />
+            <TextView
+                android:id="@+id/txt_view_vamos_enviar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/txt_view_esqueci_senha"
+                android:layout_marginBottom="8dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="8dp"
+                android:text="Vamos mandar um e-mail para a mudança da senha."
+                android:textSize="20dp" />
 
-    <TextView
-        android:id="@+id/txt_view_para_isso"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18dp"
-        android:text="Para isso coloque o e-mail do seu loggin abaixo."
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_below="@+id/txt_view_vamos_enviar"
-        android:layout_alignStart="@+id/txt_view_vamos_enviar"
-        android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/txt_view_para_isso"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_alignEnd="@+id/emailEsqueciSenha"
+                android:layout_alignStart="@+id/txt_view_vamos_enviar"
+                android:layout_below="@+id/txt_view_vamos_enviar"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Para isso coloque o e-mail do seu loggin abaixo."
+                android:textSize="18dp"
+                android:textStyle="bold" />
 
-    <EditText
-        android:id="@+id/emailEsqueciSenha"
-        android:hint="E-mail"
-        android:layout_width="300dp"
-        android:layout_height="40dp"
-        android:background="@drawable/rounded_edittext"
-        android:paddingLeft="10dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_above="@+id/botaoEnviar"
-        android:layout_alignStart="@+id/botaoEnviar" />
 
-    <Button
-        android:id="@+id/botaoEnviar"
-        android:text="Enviar"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/rounded_button_green"
-        android:textColor="@android:color/white"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="25dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+            <EditText
+                android:id="@+id/emailEsqueciSenha"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_alignStart="@+id/botaoEnviar"
+                android:layout_below="@+id/txt_view_para_isso"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="0dp"
+                android:layout_weight="0.00"
+                android:background="@drawable/rounded_edittext"
+                android:hint="E-mail"
+                android:paddingLeft="10dp" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.00" />
+
+            <Button
+                android:id="@+id/botaoEnviar"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_below="@+id/emailEsqueciSenha"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="0.00"
+                android:background="@drawable/rounded_button_green"
+                android:text="Enviar"
+                android:textColor="@android:color/white" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.01" />
+
+        </TableLayout>
+    </ScrollView>
+
+
+    </LinearLayout>
 
 </RelativeLayout>

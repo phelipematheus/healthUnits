@@ -8,40 +8,64 @@
     tools:context="com.projetomobile.jpm.healthunits.TelaLogin"
     android:background="@drawable/background_login">
 
-    <EditText
-        android:id="@+id/emailEdit"
-        android:hint="E-mail"
-        android:textStyle="italic"
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/textInputLayout"
         android:layout_width="300dp"
-        android:layout_height="40dp"
+        android:layout_height="45dp"
+        android:layout_alignStart="@+id/textInputLayout2"
+        android:layout_below="@+id/naoPossuiConta"
+        android:layout_marginTop="8dp"
         android:background="@drawable/rounded_edittext"
-        android:paddingLeft="10dp"
-        android:layout_marginBottom="11dp"
-        android:layout_above="@+id/senhaEdit"
-        android:layout_alignStart="@+id/senhaEdit" />
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp">
 
+        <EditText
+            android:id="@+id/emailEdit"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_alignBottom="@+id/naoPossuiConta"
+            android:layout_alignStart="@+id/esqueceuSenha"
+            android:layout_weight="1"
+            android:hint="E-mail"
+            android:paddingLeft="10dp"
+            android:textStyle="italic" />
+    </android.support.design.widget.TextInputLayout>
 
-    <EditText
-        android:id="@+id/senhaEdit"
-        android:hint="Senha"
-        android:textStyle="italic"
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/textInputLayout2"
         android:layout_width="300dp"
-        android:layout_height="40dp"
-        android:layout_centerVertical="true"
+        android:layout_height="45dp"
         android:layout_alignStart="@+id/botaoEntrar"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/rounded_edittext"
-        android:paddingLeft="10dp"
-        android:ems="10"
-        android:inputType="textPassword"/>
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp">
+
+        <EditText
+            android:id="@+id/senhaEdit"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_above="@+id/naoPossuiConta"
+            android:layout_alignStart="@+id/esqueceuSenha"
+            android:layout_marginStart="0dp"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="Senha"
+            android:inputType="textPassword"
+            android:paddingLeft="10dp"
+            android:textStyle="italic" />
+    </android.support.design.widget.TextInputLayout>
 
     <Button
         android:id="@+id/botaoEntrar"
         android:text="Entrar"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/senhaEdit"
+        android:layout_below="@+id/textInputLayout2"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="0dp"
         android:background="@drawable/rounded_button_green"
         android:textColor="@android:color/white" />
 
@@ -52,9 +76,8 @@
         android:text="Ainda não possui conta? "
         android:layout_marginLeft="8dp"
         android:textSize="17sp"
-        android:layout_marginBottom="13dp"
-        android:layout_above="@+id/emailEdit"
-        android:layout_alignStart="@+id/emailEdit" />
+        android:layout_below="@+id/textView2"
+        android:layout_alignStart="@+id/textView2" />
 
     <TextView
         android:id="@+id/cadastreSe"
@@ -69,36 +92,47 @@
         android:layout_toEndOf="@+id/naoPossuiConta"
         />
 
-    <TextView
-        android:id="@+id/esqueceuSenha"
-        android:text="Esqueceu sua senha? "
-        android:textSize="17sp"
+    <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="13dp"
+        android:layout_height="50dp"
+        android:layout_alignEnd="@+id/botaoEntrar"
+        android:layout_alignStart="@+id/botaoEntrar"
         android:layout_below="@+id/botaoEntrar"
-        android:layout_toStartOf="@+id/cadastreSe"
-        android:layout_marginTop="14dp" />
+        android:gravity="center_horizontal"
+        android:paddingTop="12dp"
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/cliqueAqui"
-        android:text="Clique aqui"
-        android:textSize="17sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:linksClickable="true"
-        android:layout_alignBaseline="@+id/esqueceuSenha"
-        android:layout_toEndOf="@+id/esqueceuSenha"
-        android:textColor="#c50033ff"         />
+        <TextView
+            android:id="@+id/esqueceuSenha"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/botaoEntrar"
+
+            android:text="Esqueceu sua senha? "
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/cliqueAqui"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/esqueceuSenha"
+            android:layout_toEndOf="@+id/esqueceuSenha"
+            android:linksClickable="true"
+            android:text="Clique aqui"
+
+            android:textColor="#c50033ff"
+            android:textSize="17sp" />
+
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/entreFacebook"
         android:src="@drawable/facebook"
         android:layout_width="300dp"
         android:layout_height="65dp"
-        android:layout_marginTop="8dp"
-        android:layout_below="@+id/esqueceuSenha"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@+id/linearLayout"
+        android:layout_alignStart="@+id/linearLayout" />
 
     <ImageView
         android:id="@+id/entreGoogle"
@@ -106,18 +140,19 @@
         android:layout_width="300dp"
         android:layout_height="65dp"
         android:layout_below="@+id/entreFacebook"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignStart="@+id/entreFacebook" />
 
     <TextView
-        android:text="HEALTH UNITS"
+        android:id="@+id/textView2"
         android:layout_width="300dp"
-        android:layout_height="130dp"
-        android:layout_centerHorizontal="true"
-        android:textAlignment="center"
-        android:layout_marginTop="17dp"
+        android:layout_height="180dp"
         android:lineSpacingExtra="8sp"
-        android:textSize="50sp"
-        android:textStyle="bold" />
-
+        android:text="HEALTH UNITS"
+        android:textAlignment="center"
+        android:textSize="70sp"
+        android:textStyle="bold"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/textInputLayout" />
 
 </RelativeLayout>

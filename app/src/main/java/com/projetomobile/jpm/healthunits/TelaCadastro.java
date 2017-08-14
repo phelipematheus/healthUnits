@@ -36,6 +36,7 @@ public class TelaCadastro extends AppCompatActivity{
             public void onClick(View view) {
                 Intent callTelaLogin = new Intent(TelaCadastro.this,TelaLogin.class);
                 startActivity(callTelaLogin);
+                finish();
             }
         });
     }

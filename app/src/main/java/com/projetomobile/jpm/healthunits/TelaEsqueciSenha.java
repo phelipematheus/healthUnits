@@ -32,6 +32,7 @@ public class TelaEsqueciSenha extends AppCompatActivity {
             public void onClick(View view) {
                 Intent callTelaLogin = new Intent(TelaEsqueciSenha.this,TelaLogin.class);
                 startActivity(callTelaLogin);
+                finish();
             }
         });
     }

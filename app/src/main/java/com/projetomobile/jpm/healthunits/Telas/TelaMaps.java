@@ -1,4 +1,4 @@
-package com.projetomobile.jpm.healthunits;
+package com.projetomobile.jpm.healthunits.Telas;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +13,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.projetomobile.jpm.healthunits.R;
 
 public class TelaMaps extends FragmentActivity implements OnMapReadyCallback {
 

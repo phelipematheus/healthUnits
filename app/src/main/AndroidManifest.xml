@@ -22,7 +22,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".TelaLogin"
+            android:name=".Telas.TelaLogin"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,15 +43,15 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".TelaMaps"
+            android:name=".Telas.TelaMaps"
             android:label="@string/title_activity_maps" />
         <activity
-            android:name=".TelaCadastro"
+            android:name=".Telas.TelaCadastro"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".TelaEsqueciSenha"
+            android:name=".Telas.TelaEsqueciSenha"
             android:screenOrientation="portrait"/>
-        <activity android:name=".TelaSearchFilter" />
+        <activity android:name=".Telas.TelaSearchFilter" />
 
     </application>
 

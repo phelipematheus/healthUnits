@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "278301354235",
+    "firebase_url": "https://health-units.firebaseio.com",
+    "project_id": "health-units",
+    "storage_bucket": "health-units.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:278301354235:android:20a296e9f60bcdcf",
+        "android_client_info": {
+          "package_name": "com.projetomobile.jpm.healthunits"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "278301354235-1q1ef73sa12ih13fl8r02qtu3d9b8d7l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.projetomobile.jpm.healthunits",
+            "certificate_hash": "ae8a01f755d67f396bf8a346766dcbfec2e1e957"
+          }
+        },
+        {
+          "client_id": "278301354235-hr5at0us60g8is0q30kgaudaeogvopfs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYk4wq1vOfag9ihSchUxJHKlBHXXnCcPA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "278301354235-hr5at0us60g8is0q30kgaudaeogvopfs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

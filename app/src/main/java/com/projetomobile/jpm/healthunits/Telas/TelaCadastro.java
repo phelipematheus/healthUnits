@@ -1,4 +1,4 @@
-package com.projetomobile.jpm.healthunits;
+package com.projetomobile.jpm.healthunits.Telas;
 
 
 import android.content.Intent;
@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.projetomobile.jpm.healthunits.R;
 
 
 public class TelaCadastro extends AppCompatActivity{

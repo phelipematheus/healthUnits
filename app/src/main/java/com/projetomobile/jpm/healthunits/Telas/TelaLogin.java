@@ -1,17 +1,28 @@
-package com.projetomobile.jpm.healthunits;
+package com.projetomobile.jpm.healthunits.Telas;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.projetomobile.jpm.healthunits.DAO.ConfiguracaoFirebase;
+import com.projetomobile.jpm.healthunits.Entidade.Usuario;
+import com.projetomobile.jpm.healthunits.R;
 
 
 public class TelaLogin extends AppCompatActivity {
 
+    FirebaseAuth autenticacao;
+    Usuario usuario;
     EditText editEmail,editSenha;
     Button btnEntrar;
     TextView txtCadastro,txtEsqueciSenha;
@@ -32,9 +43,8 @@ public class TelaLogin extends AppCompatActivity {
         this.chamaCadastro();
         this.chamaEsqueciSenha();
         this.chamaSearchFilter();
-
     }
-
+    
     private void chamaCadastro(){
         txtCadastro.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,10 +69,30 @@ public class TelaLogin extends AppCompatActivity {
         btnEntrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent callTelaSearchFilter = new Intent(TelaLogin.this,TelaSearchFilter.class);
-                startActivity(callTelaSearchFilter);
+                if(!(editEmail.toString().equals("")) && !(editSenha.toString().equals("")) ){
+                    usuario = new Usuario();
+                    usuario.setEmail(editEmail.getText().toString());
+                    usuario.setPassword(editSenha.getText().toString());
+                    validarLogin();
+                }else {
+                    Toast.makeText(TelaLogin.this,"Preencha os campos de e-mail e senha!",Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
     }
 
+    private void validarLogin(){
+        autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
+        autenticacao.signInWithEmailAndPassword(usuario.getEmail(),usuario.getPassword()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()){
+                    Intent callTelaSearchFilter = new Intent(TelaLogin.this,TelaSearchFilter.class);
+                    startActivity(callTelaSearchFilter);
+                    Toast.makeText(TelaLogin.this,"Login efetuado com sucesso!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
 }

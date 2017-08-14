@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.projetomobile.jpm.healthunits.TelaLogin"
+    tools:context="com.projetomobile.jpm.healthunits.Telas.TelaLogin"
     android:background="@drawable/background_login">
 
     <android.support.design.widget.TextInputLayout

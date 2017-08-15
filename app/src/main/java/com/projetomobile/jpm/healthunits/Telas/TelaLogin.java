@@ -91,6 +91,9 @@ public class TelaLogin extends AppCompatActivity {
                     Intent callTelaSearchFilter = new Intent(TelaLogin.this,TelaSearchFilter.class);
                     startActivity(callTelaSearchFilter);
                     Toast.makeText(TelaLogin.this,"Login efetuado com sucesso!", Toast.LENGTH_SHORT).show();
+                    finish();
+                }else{
+                    Toast.makeText(TelaLogin.this,"Usuário ou senha incorretos!", Toast.LENGTH_SHORT).show();
                 }
             }
         });

@@ -44,6 +44,7 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback {
             public void onClick(View view) {
                 Intent callTelaSearchFilter = new Intent(TelaMaps.this,TelaSearchFilter.class);
                 startActivity(callTelaSearchFilter);
+                finish();
             }
         });
     }

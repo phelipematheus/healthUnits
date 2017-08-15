@@ -45,14 +45,19 @@
 
         <activity
             android:name=".Telas.TelaMaps"
-            android:label="@string/title_activity_maps" />
+            android:label="@string/title_activity_maps"
+            android:windowSoftInputMode="stateHidden"/>
         <activity
             android:name=".Telas.TelaCadastro"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"/>
         <activity
             android:name=".Telas.TelaEsqueciSenha"
-            android:screenOrientation="portrait" />
-        <activity android:name=".Telas.TelaSearchFilter" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"/>
+        <activity
+            android:name=".Telas.TelaSearchFilter"
+            android:windowSoftInputMode="stateHidden"/>
 
     </application>
 

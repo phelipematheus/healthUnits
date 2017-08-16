@@ -1,5 +1,6 @@
 package com.projetomobile.jpm.healthunits.Telas;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -66,5 +67,13 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback {
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    }
+
+    //Tratando o botão voltar
+    @Override
+    public void onBackPressed() {
+        Intent callTelaSearchFilter = new Intent(TelaMaps.this,TelaSearchFilter.class);
+        startActivity(callTelaSearchFilter);
+        finish();
     }
 }

@@ -43,5 +43,12 @@ public class TelaCadastro extends AppCompatActivity{
         });
     }
 
+    //Tratando o botão voltar
+    @Override
+    public void onBackPressed() {
+        Intent callTelaLogin = new Intent(TelaCadastro.this,TelaLogin.class);
+        startActivity(callTelaLogin);
+        finish();
+    }
 
 }

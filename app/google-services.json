@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "278301354235-1q1ef73sa12ih13fl8r02qtu3d9b8d7l.apps.googleusercontent.com",
+          "client_id": "278301354235-dusfiaunkmud9q9mnv2kkfge7cg7g85e.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.projetomobile.jpm.healthunits",
-            "certificate_hash": "ae8a01f755d67f396bf8a346766dcbfec2e1e957"
+            "certificate_hash": "9b29bd9bd640ef5727402cd30d534cf0c2822119"
           }
         },
         {

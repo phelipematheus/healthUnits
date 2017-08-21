@@ -7,14 +7,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.projetomobile.jpm.healthunits.R;
+
+import java.security.Principal;
 
 
 public class TelaCadastro extends AppCompatActivity{
 
     EditText editNome,editEmail,editSenha;
     Button btnCadastrar;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -22,33 +27,35 @@ public class TelaCadastro extends AppCompatActivity{
         setContentView(R.layout.tela_cadastro);
 
         //Criando todos as views da tela que tem id
-        editNome = (EditText)findViewById(R.id.nomeCadastro);
         editEmail = (EditText)findViewById(R.id.emailCadastro);
         editSenha = (EditText)findViewById(R.id.senhaCadastro);
         btnCadastrar = (Button)findViewById(R.id.botaoCadastrar);
 
         //Início da chamada de tela caso tenha
-        this.chamaLogin();
+        this.cadastrar();
 
     }
 
-    private void chamaLogin(){
-        btnCadastrar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent callTelaLogin = new Intent(TelaCadastro.this,TelaLogin.class);
-                startActivity(callTelaLogin);
-                finish();
-            }
-        });
-    }
-
-    //Tratando o botão voltar
     @Override
     public void onBackPressed() {
         Intent callTelaLogin = new Intent(TelaCadastro.this,TelaLogin.class);
         startActivity(callTelaLogin);
         finish();
     }
+
+    private void cadastrar(){
+        btnCadastrar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mAuth = FirebaseAuth.getInstance();
+                mAuth.createUserWithEmailAndPassword(editEmail.getText().toString(),editSenha.getText().toString());
+                Toast.makeText(getApplicationContext(),"Usuario cadastrado com sucesso", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
+    }
+
+    //Tratando o botão voltar
+
 
 }

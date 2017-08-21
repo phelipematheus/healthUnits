@@ -19,21 +19,8 @@
         android:textSize="25dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/nomeCadastro"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="12dp" />
-
-    <EditText
-        android:id="@+id/nomeCadastro"
-        android:hint="Nome"
-        android:layout_width="300dp"
-        android:layout_height="40dp"
-        android:background="@drawable/rounded_edittext"
-        android:paddingLeft="10dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_above="@+id/emailCadastro"
-        android:layout_alignStart="@+id/emailCadastro" />
+        android:layout_marginTop="230dp"/>
 
     <EditText
         android:id="@+id/emailCadastro"
@@ -42,9 +29,8 @@
         android:layout_height="40dp"
         android:background="@drawable/rounded_edittext"
         android:paddingLeft="10dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_above="@+id/senhaCadastro"
+        android:layout_marginTop="40dp"
+        android:layout_below="@+id/txt_view_criar_conta"
         android:layout_alignStart="@+id/senhaCadastro" />
 
     <EditText
@@ -54,9 +40,19 @@
         android:layout_height="40dp"
         android:background="@drawable/rounded_edittext"
         android:paddingLeft="10dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_above="@+id/botaoCadastrar"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/emailCadastro"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:id="@+id/senhaConfirmaCadastro"
+        android:hint="Confirmar Senha"
+        android:layout_width="300dp"
+        android:layout_height="40dp"
+        android:background="@drawable/rounded_edittext"
+        android:paddingLeft="10dp"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/senhaCadastro"
         android:layout_centerHorizontal="true" />
 
     <Button
@@ -70,7 +66,5 @@
         android:layout_marginBottom="25dp"
         android:layout_alignParentBottom="true"
         android:layout_alignStart="@+id/emailCadastro" />
-
-
 
 </RelativeLayout>

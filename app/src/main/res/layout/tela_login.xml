@@ -9,10 +9,10 @@
     android:background="@drawable/background_login">
 
     <android.support.design.widget.TextInputLayout
-        android:id="@+id/textInputLayout"
+        android:id="@+id/layoutEditEmail"
         android:layout_width="300dp"
         android:layout_height="45dp"
-        android:layout_alignStart="@+id/textInputLayout2"
+        android:layout_alignStart="@+id/layoutEditSenha"
         android:layout_below="@+id/naoPossuiConta"
         android:layout_marginTop="8dp"
         android:background="@drawable/rounded_edittext"
@@ -23,18 +23,17 @@
             android:id="@+id/emailEdit"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:layout_alignBottom="@+id/naoPossuiConta"
-            android:layout_alignStart="@+id/esqueceuSenha"
             android:layout_weight="1"
             android:hint="E-mail"
             android:paddingLeft="10dp"
-            android:textStyle="italic" />
+            android:textStyle="italic"/>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
-        android:id="@+id/textInputLayout2"
+        android:id="@+id/layoutEditSenha"
         android:layout_width="300dp"
         android:layout_height="45dp"
+        android:layout_below="@+id/layoutEditEmail"
         android:layout_alignStart="@+id/botaoEntrar"
         android:layout_centerVertical="true"
         android:layout_marginTop="5dp"
@@ -47,15 +46,10 @@
             android:id="@+id/senhaEdit"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:layout_above="@+id/naoPossuiConta"
-            android:layout_alignStart="@+id/esqueceuSenha"
-            android:layout_marginStart="0dp"
             android:layout_weight="1"
-            android:ems="10"
             android:hint="Senha"
             android:inputType="textPassword"
-            android:paddingLeft="10dp"
-            android:textStyle="italic" />
+            android:paddingLeft="10dp"/>
     </android.support.design.widget.TextInputLayout>
 
     <Button
@@ -63,7 +57,7 @@
         android:text="Entrar"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textInputLayout2"
+        android:layout_below="@+id/layoutEditSenha"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="0dp"
         android:background="@drawable/rounded_button_green"
@@ -153,6 +147,6 @@
         android:textStyle="bold"
         android:layout_marginTop="20dp"
         android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/textInputLayout" />
+        android:layout_alignStart="@+id/layoutEditEmail" />
 
 </RelativeLayout>

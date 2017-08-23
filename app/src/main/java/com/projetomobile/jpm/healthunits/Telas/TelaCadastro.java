@@ -38,8 +38,6 @@ public class TelaCadastro extends AppCompatActivity{
 
     @Override
     public void onBackPressed() {
-        Intent callTelaLogin = new Intent(TelaCadastro.this,TelaLogin.class);
-        startActivity(callTelaLogin);
         finish();
     }
 
@@ -51,6 +49,9 @@ public class TelaCadastro extends AppCompatActivity{
                 mAuth.createUserWithEmailAndPassword(editEmail.getText().toString(),editSenha.getText().toString());
                 Toast.makeText(getApplicationContext(),"Usuario cadastrado com sucesso", Toast.LENGTH_SHORT).show();
                 finish();
+                //se ja existe
+                //conferir os dois campos da senha
+                //conferir o padrao do email
             }
         });
     }

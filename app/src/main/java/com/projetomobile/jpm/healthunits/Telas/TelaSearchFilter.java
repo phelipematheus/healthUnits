@@ -40,23 +40,4 @@ public class TelaSearchFilter extends AppCompatActivity{
         });
     }
 
-    //Tratando o botão voltar
-    //Não vejo necessidade de colcoar esse método aqui
-    /*@Override
-    public void onBackPressed() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Sair?");
-        builder.setMessage("Deseja realmente sair?");
-        builder.setPositiveButton("SIM", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface arg0, int arg1) {
-                finish();
-            }
-        });
-        builder.setNegativeButton("NÃO", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface arg0, int arg1) {
-            }
-        });
-        AlertDialog alerta = builder.create();
-        alerta.show();
-    }*/
 }

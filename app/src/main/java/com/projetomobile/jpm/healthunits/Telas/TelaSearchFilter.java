@@ -41,7 +41,8 @@ public class TelaSearchFilter extends AppCompatActivity{
     }
 
     //Tratando o botão voltar
-    @Override
+    //Não vejo necessidade de colcoar esse método aqui
+    /*@Override
     public void onBackPressed() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Sair?");
@@ -57,5 +58,5 @@ public class TelaSearchFilter extends AppCompatActivity{
         });
         AlertDialog alerta = builder.create();
         alerta.show();
-    }
+    }*/
 }

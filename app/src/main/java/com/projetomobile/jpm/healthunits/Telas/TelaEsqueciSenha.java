@@ -59,7 +59,6 @@ public class TelaEsqueciSenha extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent callTelaLogin = new Intent(TelaEsqueciSenha.this,TelaLogin.class);
-        startActivity(callTelaLogin);
         finish();
     }
 

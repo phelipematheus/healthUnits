@@ -54,8 +54,4 @@ public class TelaCadastro extends AppCompatActivity{
             }
         });
     }
-
-    //Tratando o botão voltar
-
-
 }

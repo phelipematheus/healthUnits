@@ -1,4 +1,4 @@
-package com.projetomobile.jpm.healthunits.Entidade;
+package com.projetomobile.jpm.healthunits.ValueObject;
 
 /**
  * Created by ppalmeira on 23/08/17.

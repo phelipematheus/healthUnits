@@ -11,6 +11,7 @@ import android.widget.EditText;
 
 import com.projetomobile.jpm.healthunits.R;
 import com.projetomobile.jpm.healthunits.Service.APIInterface;
+import com.projetomobile.jpm.healthunits.Service.ControllerRetrofit;
 import com.projetomobile.jpm.healthunits.ValueObject.Estabelecimento;
 
 import java.util.List;
@@ -33,26 +34,23 @@ public class TelaSearchFilter extends AppCompatActivity{
 
         //Início da chamada de tela caso tenha
         this.chamaMaps();
-        // Testando se a API esta funcionando
-        chamadaAPI();
     }
 
     private void chamaMaps(){
         btnBuscar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Intent callTelaMaps = new Intent(TelaSearchFilter.this,TelaMaps.class);
-                startActivity(callTelaMaps);
-                finish();
+                //Intent callTelaMaps = new Intent(TelaSearchFilter.this,TelaMaps.class);
+               // startActivity(callTelaMaps);
+               // finish();
+               chamadaAPI();
             }
         });
     }
 
-    public List<Estabelecimento> chamadaAPI(){
-        Retrofit retrofit = new Retrofit.Builder().baseUrl("http://mobile-aceite.tcu.gov.br/mapa-da-saude/").build();
-        APIInterface estabelecimentos = retrofit.create(APIInterface.class);
-        return (List<Estabelecimento>) estabelecimentos.listEstabelecimento();
+    public void chamadaAPI(){
+        ControllerRetrofit cRetrofit = new ControllerRetrofit();
+        cRetrofit.start();
     }
 
 }

@@ -17,7 +17,7 @@ public interface APIInterface {
     @GET("rest/estabelecimentos")
     Call<List<Estabelecimento>> listEstabelecimento();
 
-    @GET("/rest/estabelecimentos/latitude/{latitude}/longitude/{longitude}/raio/{raio}")
+    @GET("rest/estabelecimentos/latitude/{latitude}/longitude/{longitude}/raio/{raio}")
     Call<List<Estabelecimento>> listEstabelecimentoRaio(@Path("latitude") String lat,@Path("longitude") String lon,@Path("raio") String raio);
 
 }

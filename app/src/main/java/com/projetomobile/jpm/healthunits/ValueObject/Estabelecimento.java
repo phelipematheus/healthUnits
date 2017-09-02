@@ -1,5 +1,7 @@
 package com.projetomobile.jpm.healthunits.ValueObject;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by ppalmeira on 23/08/17.
  */
@@ -35,8 +37,8 @@ public class Estabelecimento {
     private String cep;
     private String telefone;
     private String turnoAtendimento;
-    private Integer latitude;
-    private Integer longitude;
+    @SerializedName("lat") private Float latitude;
+    @SerializedName("long")private Float longitude;
 
     public Integer getCodCnes() {
         return codCnes;
@@ -270,19 +272,19 @@ public class Estabelecimento {
         this.turnoAtendimento = turnoAtendimento;
     }
 
-    public Integer getLatitude() {
+    public Float getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Integer latitude) {
+    public void setLatitude(Float latitude) {
         this.latitude = latitude;
     }
 
-    public Integer getLongitude() {
+    public Float getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Integer longitude) {
+    public void setLongitude(Float longitude) {
         this.longitude = longitude;
     }
 

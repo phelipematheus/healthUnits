@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.projetomobile.jpm.healthunits.ValueObject.Estabelecimento;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -22,6 +23,12 @@ public class ControllerRetrofit implements Callback<List<Estabelecimento>> {
 
     static final String BASE_URL = "http://mobile-aceite.tcu.gov.br/mapa-da-saude/";
 
+    private List<Estabelecimento> listaEstabelecimentos = new ArrayList<Estabelecimento>();
+
+    public ControllerRetrofit() {
+        start();
+    }
+
     public void start() {
         Gson gson = new GsonBuilder().setLenient().create();
         Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL)
@@ -36,6 +43,12 @@ public class ControllerRetrofit implements Callback<List<Estabelecimento>> {
     @Override
     public void onResponse(Call<List<Estabelecimento>> call, Response<List<Estabelecimento>> response) {
         if(response.isSuccessful()){
+            List<Estabelecimento> e = new ArrayList<Estabelecimento>();
+            for(Estabelecimento estabelecimento : response.body()){
+                e.add(estabelecimento);
+            }
+
+            setListaEstabelecimentos(e);
             Log.e("","PASSOU!");
         }else {
             Log.e("", "NAO PASSOU");
@@ -46,5 +59,13 @@ public class ControllerRetrofit implements Callback<List<Estabelecimento>> {
     public void onFailure(Call<List<Estabelecimento>> call, Throwable t) {
         Log.e("","Falou");
         Log.e("",t.getMessage());
+    }
+
+    public List<Estabelecimento> getListaEstabelecimentos() {
+        return listaEstabelecimentos;
+    }
+
+    public void setListaEstabelecimentos(List<Estabelecimento> listaEstabelecimentos) {
+        this.listaEstabelecimentos = listaEstabelecimentos;
     }
 }

@@ -28,12 +28,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.projetomobile.jpm.healthunits.R;
+import com.projetomobile.jpm.healthunits.Service.ControllerRetrofit;
 
 public class TelaMaps extends FragmentActivity implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener {
 
     private GoogleMap mMap;
-    EditText editPesquisar;
-    Button btnAlterarFiltros;
+    private EditText editPesquisar;
+    private Button btnAlterarFiltros;
+    private ControllerRetrofit controllerRetrofit = new ControllerRetrofit();
     private Location mLastLocation;
     private GoogleApiClient mGoogleApiClient;
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
@@ -51,13 +53,6 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback, Co
         editPesquisar = (EditText) findViewById(R.id.pesquisarEdit);
         btnAlterarFiltros = (Button) findViewById(R.id.botaoAlterarFiltros);
 
-        /*
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API).build();
-        mGoogleApiClient.connect();
-*/
         // First we need to check availability of play services
         if (checkPlayServices()) {
 
@@ -81,33 +76,10 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback, Co
         });
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         displayLocation();
-        //LatLng sydney = new LatLng(-34, 151);
-        //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        mMap.setMyLocationEnabled(true);
     }
 
     //Tratando o botão voltar
@@ -142,8 +114,16 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback, Co
             mMap.addMarker(new MarkerOptions().position(voce).title("Oh você aqui!!!"));
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(voce, 12.0f));
 
+            //Localização dos outros
+            for(int j = 0; j<controllerRetrofit.getListaEstabelecimentos().size(); j++){
+                Float lat = controllerRetrofit.getListaEstabelecimentos().get(j).getLatitude();
+                Float longi = controllerRetrofit.getListaEstabelecimentos().get(j).getLongitude();
+                String nomeDoEstabelecimento = controllerRetrofit.getListaEstabelecimentos().get(j).getNomeFantasia();
+                mMap.addMarker(new MarkerOptions().position(new LatLng(lat,longi)).title(nomeDoEstabelecimento));
+            }
+
         } else {
-            Log.e("RESPOSTA","ESTÁ NO ELSEEEEEEE");
+            Log.e("RESPOSTA","ESTÁ NO ELSE");
         }
     }
 
@@ -189,18 +169,24 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback, Co
 
     }
 
+    /**
+     * Google api callback methods
+     */
     @Override
-    public void onConnected(@Nullable Bundle bundle) {
+    public void onConnectionFailed(ConnectionResult result) {
+        Log.i("", "Connection failed:  "
+                + result.getErrorCode());
+    }
+
+    @Override
+    public void onConnected(Bundle arg0) {
+
+        // Once connected with google api, get the location
         displayLocation();
     }
 
     @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+    public void onConnectionSuspended(int arg0) {
+        mGoogleApiClient.connect();
     }
 }

@@ -44,7 +44,7 @@ public class ControllerRetrofit implements Callback<List<Estabelecimento>> {
 
     @Override
     public void onFailure(Call<List<Estabelecimento>> call, Throwable t) {
-        Log.e("","Falou/n");
+        Log.e("","Falou");
         Log.e("",t.getMessage());
     }
 }

@@ -40,10 +40,10 @@ public class TelaSearchFilter extends AppCompatActivity{
         btnBuscar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Intent callTelaMaps = new Intent(TelaSearchFilter.this,TelaMaps.class);
-               // startActivity(callTelaMaps);
-               // finish();
-               chamadaAPI();
+                Intent callTelaMaps = new Intent(TelaSearchFilter.this,TelaMaps.class);
+                startActivity(callTelaMaps);
+                finish();
+               //chamadaAPI();
             }
         });
     }

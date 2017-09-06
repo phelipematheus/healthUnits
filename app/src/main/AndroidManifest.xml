@@ -25,7 +25,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".Telas.TelaLogin"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -41,7 +41,9 @@
         <activity
             android:name=".Telas.TelaMaps"
             android:label="@string/title_activity_maps"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateHidden" >
+
+        </activity>
         <activity
             android:name=".Telas.TelaCadastro"
             android:screenOrientation="portrait"
@@ -59,7 +61,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Telas.TelaListaEstabelecimento"></activity>
+        <activity android:name=".Telas.TelaListaEstabelecimento" />
     </application>
 
 </manifest>

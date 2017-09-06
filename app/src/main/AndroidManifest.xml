@@ -9,7 +9,7 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
@@ -25,7 +25,13 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".Telas.TelaLogin"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -41,7 +47,9 @@
         <activity
             android:name=".Telas.TelaMaps"
             android:label="@string/title_activity_maps"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateHidden" >
+
+        </activity>
         <activity
             android:name=".Telas.TelaCadastro"
             android:screenOrientation="portrait"
@@ -53,13 +61,9 @@
         <activity
             android:name=".Telas.TelaSearchFilter"
             android:windowSoftInputMode="stateHidden">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
-        <activity android:name=".Telas.TelaListaEstabelecimento"></activity>
+        <activity android:name=".Telas.TelaListaEstabelecimento" />
     </application>
 
 </manifest>

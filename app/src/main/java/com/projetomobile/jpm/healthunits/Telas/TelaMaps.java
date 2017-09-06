@@ -30,6 +30,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.projetomobile.jpm.healthunits.R;
 import com.projetomobile.jpm.healthunits.Service.ControllerRetrofit;
 
+import layout.teste.TelaListaEstabelecimento;
+
 public class TelaMaps extends FragmentActivity implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener {
 
     private GoogleMap mMap;
@@ -39,6 +41,7 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback, Co
     private Location mLastLocation;
     private GoogleApiClient mGoogleApiClient;
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
+    private Button btnListar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +55,15 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback, Co
         //Criando todos as views da tela que tem id
         editPesquisar = (EditText) findViewById(R.id.pesquisarEdit);
         btnAlterarFiltros = (Button) findViewById(R.id.botaoAlterarFiltros);
+        btnListar = (Button) findViewById(R.id.botaoListar);
+        btnListar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent callTelaListaEstabelecimento = new Intent(TelaMaps.this, TelaListaEstabelecimento.class);
+                startActivity(callTelaListaEstabelecimento);
 
+            }
+        });
         // First we need to check availability of play services
         if (checkPlayServices()) {
 

@@ -16,8 +16,8 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
-        android:hardwareAccelerated = "false"
         android:allowBackup="true"
+        android:hardwareAccelerated="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -25,9 +25,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".Telas.TelaLogin"
-            android:screenOrientation="portrait">
-
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -43,24 +41,25 @@
         <activity
             android:name=".Telas.TelaMaps"
             android:label="@string/title_activity_maps"
-            android:windowSoftInputMode="stateHidden"/>
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".Telas.TelaCadastro"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden"/>
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".Telas.TelaEsqueciSenha"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden"/>
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".Telas.TelaSearchFilter"
             android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity android:name="layout.teste.TelaListaEstabelecimento"></activity>
     </application>
 
 </manifest>

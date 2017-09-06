@@ -62,6 +62,7 @@ public class ControllerRetrofit implements Callback<List<Estabelecimento>> {
     }
 
     public List<Estabelecimento> getListaEstabelecimentos() {
+
         return listaEstabelecimentos;
     }
 

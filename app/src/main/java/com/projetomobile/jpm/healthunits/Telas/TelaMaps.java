@@ -51,12 +51,15 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*,
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
+            Log.e("ERROU", "ERROU O MAPA");
+            System.out.println("ERRO NO MAPA");
             return;
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, new LocationListener() {
             @Override
             public void onLocationChanged(Location loc) {
                 String s = "Minha cidade atual: Brasília";
+                System.out.println(s);
 
                 //Localização dos outros
                 for(int j = 0; j<controllerRetrofit.getListaEstabelecimentos().size(); j++){
@@ -67,6 +70,8 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*,
                 }
 
                 mMap.addMarker(new MarkerOptions().position(new LatLng(loc.getLatitude(),loc.getLongitude())).snippet(s).title("YOU!!!"));
+                LatLng voce = new LatLng(loc.getLatitude(), loc.getLongitude());
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(voce, 12.0f));
             }
 
             @Override
@@ -108,11 +113,16 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*,
         //    buildGoogleApiClient();
         //}
 
-        setUpMap();
-
         //Início da chamada de tela caso tenha
         this.chamaSearchFilter();
         this.chamaAdapter();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        setUpMap();
     }
 /*
     protected synchronized void buildGoogleApiClient() {

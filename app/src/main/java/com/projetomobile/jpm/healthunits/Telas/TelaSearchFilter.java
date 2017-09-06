@@ -42,7 +42,6 @@ public class TelaSearchFilter extends AppCompatActivity{
             public void onClick(View view) {
                 Intent callTelaMaps = new Intent(TelaSearchFilter.this,TelaMaps.class);
                 startActivity(callTelaMaps);
-                finish();
                //chamadaAPI();
             }
         });

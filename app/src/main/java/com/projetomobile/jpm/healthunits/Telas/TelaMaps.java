@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -30,8 +28,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.projetomobile.jpm.healthunits.R;
 import com.projetomobile.jpm.healthunits.Service.ControllerRetrofit;
 
-import layout.teste.TelaListaEstabelecimento;
-
 public class TelaMaps extends FragmentActivity implements OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener {
 
     private GoogleMap mMap;
@@ -47,6 +43,7 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback, Co
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tela_mapa);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -56,33 +53,59 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback, Co
         editPesquisar = (EditText) findViewById(R.id.pesquisarEdit);
         btnAlterarFiltros = (Button) findViewById(R.id.botaoAlterarFiltros);
         btnListar = (Button) findViewById(R.id.botaoListar);
-        btnListar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent callTelaListaEstabelecimento = new Intent(TelaMaps.this, TelaListaEstabelecimento.class);
-                startActivity(callTelaListaEstabelecimento);
 
-            }
-        });
-        // First we need to check availability of play services
+        // Primeiramente precisamos checar a disponibilidade da play services
         if (checkPlayServices()) {
-
-            // Building the GoogleApi client
+            // Bildando o cliente da google api
             buildGoogleApiClient();
         }
 
         //Início da chamada de tela caso tenha
         this.chamaSearchFilter();
+        this.chamaAdapter();
+    }
 
+    protected synchronized void buildGoogleApiClient() {
+        // Cria um cliente da google API
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API).build();
+    }
+
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil
+                .isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Toast.makeText(getApplicationContext(),
+                        "Não foi possível achar a google play services", Toast.LENGTH_LONG)
+                        .show();
+                finish();
+            }
+            return false;
+        }
+        return true;
     }
 
     private void chamaSearchFilter() {
         btnAlterarFiltros.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent callTelaSearchFilter = new Intent(TelaMaps.this, TelaSearchFilter.class);
-                startActivity(callTelaSearchFilter);
                 finish();
+            }
+        });
+    }
+
+    private void chamaAdapter(){
+        btnListar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent callTelaListaEstabelecimento = new Intent(TelaMaps.this, TelaListaEstabelecimento.class);
+                startActivity(callTelaListaEstabelecimento);
             }
         });
     }
@@ -91,14 +114,6 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback, Co
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         displayLocation();
-    }
-
-    //Tratando o botão voltar
-    @Override
-    public void onBackPressed() {
-        Intent callTelaSearchFilter = new Intent(TelaMaps.this, TelaSearchFilter.class);
-        startActivity(callTelaSearchFilter);
-        finish();
     }
 
     private void displayLocation() {
@@ -113,8 +128,7 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback, Co
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        mLastLocation = LocationServices.FusedLocationApi
-                .getLastLocation(mGoogleApiClient);
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
         if (mLastLocation != null) {
             //Minha localização
@@ -132,35 +146,10 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback, Co
                 String nomeDoEstabelecimento = controllerRetrofit.getListaEstabelecimentos().get(j).getNomeFantasia();
                 mMap.addMarker(new MarkerOptions().position(new LatLng(lat,longi)).title(nomeDoEstabelecimento));
             }
-
+            Log.e("Resposta","ESTA NO IF");
         } else {
             Log.e("RESPOSTA","ESTÁ NO ELSE");
         }
-    }
-
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API).build();
-    }
-
-    private boolean checkPlayServices() {
-        int resultCode = GooglePlayServicesUtil
-                .isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
-                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
-            } else {
-                Toast.makeText(getApplicationContext(),
-                        "This device is not supported.", Toast.LENGTH_LONG)
-                        .show();
-                finish();
-            }
-            return false;
-        }
-        return true;
     }
 
     @Override
@@ -169,15 +158,12 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback, Co
         if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
         }
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
         checkPlayServices();
-
     }
 
     /**

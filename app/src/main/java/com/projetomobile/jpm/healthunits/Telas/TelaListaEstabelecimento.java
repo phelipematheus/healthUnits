@@ -1,4 +1,4 @@
-package layout.teste;
+package com.projetomobile.jpm.healthunits.Telas;
 
 
 import android.support.v7.app.AppCompatActivity;
@@ -25,21 +25,9 @@ public class TelaListaEstabelecimento extends AppCompatActivity {
 
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 
-
-        Estabelecimento a = new Estabelecimento();
-        a.setNomeFantasia("Stanta gasdfasdf");
-        a.setDescricaoCompleta("asdffdsaasdfasdfasdfasdf");
-        Estabelecimento b = new Estabelecimento();
-        b.setNomeFantasia("Stanta gasdfasdf");
-        b.setDescricaoCompleta("asdffdsaasdfasdfasdfasdf");
-
-        List <Estabelecimento> est = new ArrayList<>();
-
-        est.add(a);
-        est.add(b);
+        mRecyclerView.setAdapter(new MyAdapter(new ControllerRetrofit().getListaEstabelecimentos()));
 
 
-        mRecyclerView.setAdapter(new MyAdapter(est));
 
     }
 }

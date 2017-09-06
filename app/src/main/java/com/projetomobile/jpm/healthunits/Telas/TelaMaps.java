@@ -62,14 +62,14 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*,
                 System.out.println(s);
 
                 //Localização dos outros
-                for(int j = 0; j<controllerRetrofit.getListaEstabelecimentos().size(); j++){
+                for (int j = 0; j < controllerRetrofit.getListaEstabelecimentos().size(); j++) {
                     Float lat = controllerRetrofit.getListaEstabelecimentos().get(j).getLatitude();
                     Float longi = controllerRetrofit.getListaEstabelecimentos().get(j).getLongitude();
                     String nomeDoEstabelecimento = controllerRetrofit.getListaEstabelecimentos().get(j).getNomeFantasia();
-                    mMap.addMarker(new MarkerOptions().position(new LatLng(lat,longi)).title(nomeDoEstabelecimento));
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(lat, longi)).title(nomeDoEstabelecimento));
                 }
 
-                mMap.addMarker(new MarkerOptions().position(new LatLng(loc.getLatitude(),loc.getLongitude())).snippet(s).title("YOU!!!"));
+                mMap.addMarker(new MarkerOptions().position(new LatLng(loc.getLatitude(), loc.getLongitude())).snippet(s).title("YOU!!!"));
                 LatLng voce = new LatLng(loc.getLatitude(), loc.getLongitude());
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(voce, 12.0f));
             }
@@ -109,7 +109,7 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*,
 
         // Primeiramente precisamos checar a disponibilidade da play services
         //if (checkPlayServices()) {
-            // Bildando o cliente da google api
+        // Bildando o cliente da google api
         //    buildGoogleApiClient();
         //}
 
@@ -118,12 +118,6 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*,
         this.chamaAdapter();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        setUpMap();
-    }
 /*
     protected synchronized void buildGoogleApiClient() {
         // Cria um cliente da google API
@@ -161,7 +155,7 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*,
         });
     }
 
-    private void chamaAdapter(){
+    private void chamaAdapter() {
         btnListar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -176,6 +170,17 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*,
         mMap = googleMap;
         //displayLocation();
         setUpMap();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
     }
 /*
     private void displayLocation() {

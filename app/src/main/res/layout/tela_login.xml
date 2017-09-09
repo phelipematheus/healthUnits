@@ -120,21 +120,29 @@
 
     </LinearLayout>
 
-    <ImageView
+    <com.facebook.login.widget.LoginButton
         android:id="@+id/entreFacebook"
         android:src="@drawable/facebook"
-        android:layout_width="300dp"
-        android:layout_height="65dp"
+        android:layout_width="290dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="-33dp"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/linearLayout"
-        android:layout_alignStart="@+id/linearLayout" />
+        android:layout_alignStart="@+id/linearLayout"
+        android:layout_alignEnd="@+id/linearLayout" />
 
-    <ImageView
+    <com.google.android.gms.common.SignInButton
         android:id="@+id/entreGoogle"
-        android:src="@drawable/google"
-        android:layout_width="300dp"
+        android:layout_width="307dp"
         android:layout_height="65dp"
+        android:layout_marginLeft="-4dp"
         android:layout_below="@+id/entreFacebook"
-        android:layout_alignStart="@+id/entreFacebook" />
+        android:layout_alignStart="@+id/entreFacebook"
+        android:textAlignment="center"/>
+
+
 
     <TextView
         android:id="@+id/textView2"

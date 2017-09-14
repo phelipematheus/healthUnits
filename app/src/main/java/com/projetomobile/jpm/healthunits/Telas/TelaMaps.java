@@ -307,12 +307,12 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*,
 
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
-            ActivityCompat.requestPermissions( this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, MAP_PERMISSION_ACCESS_FINE_LOCATION);
-        } else {
-            getLastLocation();
-            getLocation();
-        }
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, MAP_PERMISSION_ACCESS_FINE_LOCATION);
+            } else {
+                getLastLocation();
+                getLocation();
+            }
         mMap.setMyLocationEnabled(true);
     }
 
@@ -321,7 +321,7 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*,
             Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             LatLng me = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
             mMap.addMarker(new MarkerOptions().position(me).title("Eu estava aqui quando o anrdoid me localizou pela última vez!!!"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, 10));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(me, 10));
         }
     }
 
@@ -331,7 +331,7 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*,
                 public void onLocationChanged(Location location) {
                     LatLng me = new LatLng(location.getLatitude(), location.getLongitude());
                     mMap.addMarker(new MarkerOptions().position(me).title("Estou Aqui!!!"));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, 10));
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(me, 10));
 
                     //Localização dos outros
                     for(int j = 0; j<controllerRetrofit.getListaEstabelecimentos().size(); j++){
@@ -351,7 +351,7 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*,
                 public void onProviderDisabled(String provider) {
                 }
             };
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 40000, 0, locationListener);
         }
     }
 
@@ -360,8 +360,8 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*,
         switch (requestCode) {
             case MAP_PERMISSION_ACCESS_FINE_LOCATION: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    getLastLocation();
-                    getLocation();
+                        getLastLocation();
+                        getLocation();
                 } else {
                     //Permissão negada
                 }

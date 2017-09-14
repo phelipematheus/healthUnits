@@ -1,6 +1,6 @@
 package com.projetomobile.jpm.healthunits.Telas;
 
-import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -9,18 +9,11 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -32,6 +25,7 @@ import com.projetomobile.jpm.healthunits.Service.ControllerRetrofit;
 
 public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*, ConnectionCallbacks, OnConnectionFailedListener*/ {
 
+    /*
     private GoogleMap mMap;
     private EditText editPesquisar;
     private Button btnAlterarFiltros;
@@ -39,8 +33,10 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*,
     private Location mLastLocation;
     private GoogleApiClient mGoogleApiClient;
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
+    public static final int MAP_PERMISSION_ACCESS_COURSE_LOCATION = 9999;
     private Button btnListar;
 
+    =====================Modelo antigo=====================================
     private void setUpMap() {
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -144,7 +140,7 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*,
         }
         return true;
     }
-    */
+
 
     private void chamaSearchFilter() {
         btnAlterarFiltros.setOnClickListener(new View.OnClickListener() {
@@ -182,7 +178,7 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*,
         }
         mMap.setMyLocationEnabled(true);
     }
-/*
+
     private void displayLocation() {
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -254,4 +250,123 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*,
         mGoogleApiClient.connect();
     }
     */
+    //================Método novo do professor============================
+    public static final int MAP_PERMISSION_ACCESS_FINE_LOCATION = 9999;
+
+    private GoogleMap mMap;
+    private LocationManager locationManager;
+
+    private EditText editPesquisar;
+    private Button btnAlterarFiltros;
+    private Button btnListar;
+    private ControllerRetrofit controllerRetrofit = new ControllerRetrofit();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.tela_mapa);
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        //Criando todos as views da tela que tem id
+        editPesquisar = (EditText) findViewById(R.id.pesquisarEdit);
+        btnAlterarFiltros = (Button) findViewById(R.id.botaoAlterarFiltros);
+        btnListar = (Button) findViewById(R.id.botaoListar);
+
+
+        //Início da chamada de tela caso tenha
+        this.chamaSearchFilter();
+        this.chamaAdapter();
+    }
+
+    private void chamaSearchFilter() {
+        btnAlterarFiltros.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+    }
+
+    private void chamaAdapter() {
+        btnListar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent callTelaListaEstabelecimento = new Intent(TelaMaps.this, TelaListaEstabelecimento.class);
+                startActivity(callTelaListaEstabelecimento);
+            }
+        });
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
+            ActivityCompat.requestPermissions( this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, MAP_PERMISSION_ACCESS_FINE_LOCATION);
+        } else {
+            getLastLocation();
+            getLocation();
+        }
+        mMap.setMyLocationEnabled(true);
+    }
+
+    private void getLastLocation() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ) {
+            Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            LatLng me = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+            mMap.addMarker(new MarkerOptions().position(me).title("Eu estava aqui quando o anrdoid me localizou pela última vez!!!"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, 10));
+        }
+    }
+
+    private void getLocation() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ) {
+            LocationListener locationListener = new LocationListener() {
+                public void onLocationChanged(Location location) {
+                    LatLng me = new LatLng(location.getLatitude(), location.getLongitude());
+                    mMap.addMarker(new MarkerOptions().position(me).title("Estou Aqui!!!"));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, 10));
+
+                    //Localização dos outros
+                    for(int j = 0; j<controllerRetrofit.getListaEstabelecimentos().size(); j++){
+                        Float lat = controllerRetrofit.getListaEstabelecimentos().get(j).getLatitude();
+                        Float longi = controllerRetrofit.getListaEstabelecimentos().get(j).getLongitude();
+                        String nomeDoEstabelecimento = controllerRetrofit.getListaEstabelecimentos().get(j).getNomeFantasia();
+                        mMap.addMarker(new MarkerOptions().position(new LatLng(lat,longi)).title(nomeDoEstabelecimento));
+                    }
+                }
+
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+                }
+
+                public void onProviderEnabled(String provider) {
+                }
+
+                public void onProviderDisabled(String provider) {
+                }
+            };
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case MAP_PERMISSION_ACCESS_FINE_LOCATION: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    getLastLocation();
+                    getLocation();
+                } else {
+                    //Permissão negada
+                }
+                return;
+            }
+        }
+    }
 }

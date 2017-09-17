@@ -1,0 +1,71 @@
+{
+  "project_info": {
+    "project_number": "278301354235",
+    "firebase_url": "https://health-units.firebaseio.com",
+    "project_id": "health-units",
+    "storage_bucket": "health-units.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:278301354235:android:20a296e9f60bcdcf",
+        "android_client_info": {
+          "package_name": "com.projetomobile.jpm.healthunits"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "278301354235-pspmciakcia1u2eklq11ab8ek6q1rurj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.projetomobile.jpm.healthunits",
+            "certificate_hash": "9c6809ed063657e205f08ba3a43669747fe61f00"
+          }
+        },
+        {
+          "client_id": "278301354235-bfr4cs9cofhj80pg3dgrj2mompmhb5v9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.projetomobile.jpm.healthunits",
+            "certificate_hash": "22d5f31e0ceb6935db07fe4c0e22c0db5c591d3b"
+          }
+        },
+        {
+          "client_id": "278301354235-dusfiaunkmud9q9mnv2kkfge7cg7g85e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.projetomobile.jpm.healthunits",
+            "certificate_hash": "9b29bd9bd640ef5727402cd30d534cf0c2822119"
+          }
+        },
+        {
+          "client_id": "278301354235-hr5at0us60g8is0q30kgaudaeogvopfs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYk4wq1vOfag9ihSchUxJHKlBHXXnCcPA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "278301354235-hr5at0us60g8is0q30kgaudaeogvopfs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

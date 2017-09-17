@@ -21,7 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ControllerRetrofit implements Callback<List<Estabelecimento>> {
 
-    static final String BASE_URL = "http://mobile-aceite.tcu.gov.br/mapa-da-saude/";
+    public static final String BASE_URL = "http://mobile-aceite.tcu.gov.br/mapa-da-saude/";
 
     private List<Estabelecimento> listaEstabelecimentos = new ArrayList<Estabelecimento>();
 

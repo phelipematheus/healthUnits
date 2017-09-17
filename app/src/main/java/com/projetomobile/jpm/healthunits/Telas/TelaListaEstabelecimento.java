@@ -21,6 +21,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.projetomobile.jpm.healthunits.Service.ControllerRetrofit.BASE_URL;
+
 public class TelaListaEstabelecimento extends AppCompatActivity {
 
     private RecyclerView recyclerView;
@@ -30,7 +32,7 @@ public class TelaListaEstabelecimento extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tela_lista_estabelecimento);
+        setContentView(R.layout.tela_lista_estabelecimento);
 
         recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 
@@ -39,7 +41,7 @@ public class TelaListaEstabelecimento extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
 
-        Retrofit retrofit = new Retrofit.Builder().baseUrl("http://mobile-aceite.tcu.gov.br/mapa-da-saude/")
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create()).build();
 
         APIInterface apiEstabelecimento = retrofit.create(APIInterface.class);

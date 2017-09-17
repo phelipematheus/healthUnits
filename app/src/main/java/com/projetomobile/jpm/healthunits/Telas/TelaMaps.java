@@ -3,6 +3,7 @@ package com.projetomobile.jpm.healthunits.Telas;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -10,9 +11,13 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,10 +25,25 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.projetomobile.jpm.healthunits.R;
+import com.projetomobile.jpm.healthunits.Service.APIInterface;
 import com.projetomobile.jpm.healthunits.Service.ControllerRetrofit;
+import com.projetomobile.jpm.healthunits.ValueObject.Estabelecimento;
 
-public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*, ConnectionCallbacks, OnConnectionFailedListener*/ {
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+import static com.projetomobile.jpm.healthunits.Service.ControllerRetrofit.BASE_URL;
+
+public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*, ConnectionCallbacks, OnConnectionFailedListener*/ {
 
     /*
     private GoogleMap mMap;
@@ -250,16 +270,18 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*,
         mGoogleApiClient.connect();
     }
     */
-    //================Método novo do professor============================
+
     public static final int MAP_PERMISSION_ACCESS_FINE_LOCATION = 9999;
 
     private GoogleMap mMap;
     private LocationManager locationManager;
 
-    private EditText editPesquisar;
+    private AutoCompleteTextView autoCompletePesquisar;
+    private ImageView iconePesquisar;
     private Button btnAlterarFiltros;
     private Button btnListar;
     private ControllerRetrofit controllerRetrofit = new ControllerRetrofit();
+    private List<String> listEstab = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -272,10 +294,51 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*,
         mapFragment.getMapAsync(this);
 
         //Criando todos as views da tela que tem id
-        editPesquisar = (EditText) findViewById(R.id.pesquisarEdit);
+        autoCompletePesquisar = (AutoCompleteTextView) findViewById(R.id.pesquisarAutoComplete);
         btnAlterarFiltros = (Button) findViewById(R.id.botaoAlterarFiltros);
         btnListar = (Button) findViewById(R.id.botaoListar);
+        iconePesquisar = (ImageView) findViewById(R.id.pesquisarIcon);
 
+        //=========================Pesquisar================================================================
+        iconePesquisar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for(int j = 0; j<controllerRetrofit.getListaEstabelecimentos().size(); j++) {
+                    if (autoCompletePesquisar.getText().toString().toUpperCase().equals(controllerRetrofit.getListaEstabelecimentos().get(j).getNomeFantasia())) {
+                        Float latitude = controllerRetrofit.getListaEstabelecimentos().get(j).getLatitude();
+                        Float longitude = controllerRetrofit.getListaEstabelecimentos().get(j).getLongitude();
+                        LatLng local = new LatLng(latitude, longitude);
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(local, 10));
+                    }
+                }
+            }
+        });
+
+        //====================Auto Complete Pesquisar========================================================
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,listEstab);
+
+        // Dropdown layout style
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        autoCompletePesquisar.setThreshold(1);//Começa a procurar do primeiro caractere
+        autoCompletePesquisar.setAdapter(adapter);
+        autoCompletePesquisar.setTextColor(Color.RED);//Muda a cor do texto
+        autoCompletePesquisar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String selection = (String)parent.getItemAtPosition(position);
+                for(int j = 0; j<controllerRetrofit.getListaEstabelecimentos().size(); j++) {
+                    if (selection.equals(controllerRetrofit.getListaEstabelecimentos().get(j).getNomeFantasia())) {
+                        Float latitude = controllerRetrofit.getListaEstabelecimentos().get(j).getLatitude();
+                        Float longitude = controllerRetrofit.getListaEstabelecimentos().get(j).getLongitude();
+                        LatLng local = new LatLng(latitude, longitude);
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(local, 10));
+                    }
+                }
+
+            }
+        });
+        //======================================================================================================
 
         //Início da chamada de tela caso tenha
         this.chamaSearchFilter();
@@ -332,14 +395,6 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*,
                     LatLng me = new LatLng(location.getLatitude(), location.getLongitude());
                     mMap.addMarker(new MarkerOptions().position(me).title("Estou Aqui!!!"));
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(me, 10));
-
-                    //Localização dos outros
-                    for(int j = 0; j<controllerRetrofit.getListaEstabelecimentos().size(); j++){
-                        Float lat = controllerRetrofit.getListaEstabelecimentos().get(j).getLatitude();
-                        Float longi = controllerRetrofit.getListaEstabelecimentos().get(j).getLongitude();
-                        String nomeDoEstabelecimento = controllerRetrofit.getListaEstabelecimentos().get(j).getNomeFantasia();
-                        mMap.addMarker(new MarkerOptions().position(new LatLng(lat,longi)).title(nomeDoEstabelecimento));
-                    }
                 }
 
                 public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -368,5 +423,39 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback /*,
                 return;
             }
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Gson gson = new GsonBuilder().setLenient().create();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(gson)).build();
+
+        APIInterface apiEstabelecimento = retrofit.create(APIInterface.class);
+
+        Call<List<Estabelecimento>> call = apiEstabelecimento.listEstabelecimento();
+        call.enqueue(new Callback<List<Estabelecimento>>() {
+            @Override
+            public void onResponse(Call<List<Estabelecimento>> call, Response<List<Estabelecimento>> response) {
+                if(response.isSuccessful()){
+                    for(Estabelecimento estabelecimento : response.body()){
+                        listEstab.add(estabelecimento.getNomeFantasia());
+                        Float lat = estabelecimento.getLatitude();
+                        Float longi = estabelecimento.getLongitude();
+                        String nomeDoEstabelecimento = estabelecimento.getNomeFantasia();
+                        mMap.addMarker(new MarkerOptions().position(new LatLng(lat,longi)).title(nomeDoEstabelecimento));
+                    }
+                    Log.e("","PASSOU!");
+                }else {
+                    Log.e("", "NAO PASSOU");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Estabelecimento>> call, Throwable t) {
+
+            }
+        });
     }
 }

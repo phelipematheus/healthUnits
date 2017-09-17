@@ -3,8 +3,11 @@ package com.projetomobile.jpm.healthunits.Telas;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -17,6 +20,8 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.Profile;
+import com.facebook.ProfileTracker;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.Auth;
@@ -35,6 +40,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.projetomobile.jpm.healthunits.DAO.ConfiguracaoFirebase;
 import com.projetomobile.jpm.healthunits.Entidade.Usuario;
 import com.projetomobile.jpm.healthunits.R;
+
+import static com.projetomobile.jpm.healthunits.Telas.TelaMaps.MAP_PERMISSION_ACCESS_FINE_LOCATION;
 
 
 public class TelaLogin extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener{
@@ -56,6 +63,22 @@ public class TelaLogin extends AppCompatActivity implements View.OnClickListener
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tela_login);
+        //==================PERMISSÕES DO APLICATIVO===================================================
+        // Se não possui permissão
+        if (ContextCompat.checkSelfPermission(this,android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                // Verifica se já mostramos o alerta e o usuário negou na 1ª vez.
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
+                        ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    // Caso o usuário tenha negado a permissão anteriormente, e não tenha marcado o check "nunca mais mostre este alerta"
+                    // Podemos mostrar um alerta explicando para o usuário porque a permissão é importante.
+                } else {
+                    // Solicita a permissão
+                    ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
+                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MAP_PERMISSION_ACCESS_FINE_LOCATION);
+                }
+        }
 
         //Criando todos as views da tela que tem id
         txtCadastro = (TextView)findViewById(R.id.cadastreSe);
@@ -79,8 +102,6 @@ public class TelaLogin extends AppCompatActivity implements View.OnClickListener
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
-        //=============================================================================================
-
         //===========IMPLEMENTAÇÃO DO BOTÃO FACEBOOK===================================================
 
         FacebookSdk.sdkInitialize(getApplicationContext());
@@ -88,10 +109,15 @@ public class TelaLogin extends AppCompatActivity implements View.OnClickListener
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
+                ProfileTracker profileTracker = new ProfileTracker() {
+                    @Override
+                    protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
+                        Toast.makeText(TelaLogin.this,"Bem-Vindo "+currentProfile.getName()+"!",Toast.LENGTH_LONG).show();
+                    }
+                };
                 Intent callTelaSearchFilter = new Intent(TelaLogin.this,TelaSearchFilter.class);
                 startActivity(callTelaSearchFilter);
                 finish();
-                Toast.makeText(TelaLogin.this,"Bem-Vindo!",Toast.LENGTH_LONG).show();
             }
 
             @Override

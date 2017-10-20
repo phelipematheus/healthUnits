@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.projetomobile.jpm.healthunits.telas.TelaMenuNavegacao">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/hospital400x300"
+        android:layout_marginTop="-25dp"/>
+
+    <Button
+        android:id="@+id/btn_mapa_hospitais"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mapa dos Hospitais"
+        android:background="@drawable/rounded_button_green"
+        android:textColor="@android:color/white"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="5dp"/>
+
+    <Button
+        android:id="@+id/btn_lista_hospitais"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Lista de Hospitais"
+        android:background="@drawable/rounded_button_green"
+        android:textColor="@android:color/white"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="5dp"/>
+
+    <Button
+        android:id="@+id/btn_pre_chat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Preciso de socorro"
+        android:background="@drawable/rounded_button_green"
+        android:textColor="@android:color/white"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="5dp"/>
+
+    <Button
+        android:id="@+id/btn_chat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Chat"
+        android:background="@drawable/rounded_button_green"
+        android:textColor="@android:color/white"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="5dp"/>
+
+    <Button
+        android:id="@+id/btn_sair"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sair"
+        android:background="@drawable/rounded_button_red"
+        android:textColor="@android:color/white"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="5dp"/>
+
+</LinearLayout>

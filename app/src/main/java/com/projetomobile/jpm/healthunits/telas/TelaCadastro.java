@@ -1,7 +1,6 @@
-package com.projetomobile.jpm.healthunits.Telas;
+package com.projetomobile.jpm.healthunits.telas;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -11,8 +10,6 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.projetomobile.jpm.healthunits.R;
-
-import java.security.Principal;
 
 
 public class TelaCadastro extends AppCompatActivity{

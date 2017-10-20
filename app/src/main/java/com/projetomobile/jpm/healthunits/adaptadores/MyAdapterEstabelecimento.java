@@ -1,4 +1,4 @@
-package com.projetomobile.jpm.healthunits.Adaptadores;
+package com.projetomobile.jpm.healthunits.adaptadores;
 
 /**
  * Created by JV on 06/09/2017.
@@ -12,11 +12,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.projetomobile.jpm.healthunits.R;
-import com.projetomobile.jpm.healthunits.ValueObject.Estabelecimento;
+import com.projetomobile.jpm.healthunits.valueobject.Estabelecimento;
 
 import java.util.List;
-
-import static android.R.attr.name;
 
 
 public class MyAdapterEstabelecimento extends RecyclerView.Adapter<MyAdapterEstabelecimento.ViewHolder>{

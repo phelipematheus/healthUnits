@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.projetomobile.jpm.healthunits.telas.chat.TelaLocaisPreChat">
+
+    <TextView
+        android:id="@+id/txt_qual_local_ocorreu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Qual local ocorreu?"/>
+
+    <Button
+        android:id="@+id/btn_aqui_onde_estou"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Aqui onde estou!"/>
+
+    <Button
+        android:id="@+id/btn_outro_local"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Outro local"/>
+
+
+</LinearLayout>

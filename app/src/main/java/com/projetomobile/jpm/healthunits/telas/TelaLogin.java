@@ -1,4 +1,4 @@
-package com.projetomobile.jpm.healthunits.Telas;
+package com.projetomobile.jpm.healthunits.telas;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -37,11 +37,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.projetomobile.jpm.healthunits.DAO.ConfiguracaoFirebase;
-import com.projetomobile.jpm.healthunits.Entidade.Usuario;
+import com.projetomobile.jpm.healthunits.dao.ConfiguracaoFirebase;
+import com.projetomobile.jpm.healthunits.entidade.Usuario;
 import com.projetomobile.jpm.healthunits.R;
 
-import static com.projetomobile.jpm.healthunits.Telas.TelaMaps.MAP_PERMISSION_ACCESS_FINE_LOCATION;
+import static com.projetomobile.jpm.healthunits.telas.TelaMaps.MAP_PERMISSION_ACCESS_FINE_LOCATION;
 
 
 public class TelaLogin extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener{
@@ -115,8 +115,8 @@ public class TelaLogin extends AppCompatActivity implements View.OnClickListener
                         Toast.makeText(TelaLogin.this,"Bem-Vindo "+currentProfile.getName()+"!",Toast.LENGTH_LONG).show();
                     }
                 };
-                Intent callTelaSearchFilter = new Intent(TelaLogin.this,TelaSearchFilter.class);
-                startActivity(callTelaSearchFilter);
+                Intent callTelaMenuNavegacao = new Intent(TelaLogin.this,TelaMenuNavegacao.class);
+                startActivity(callTelaMenuNavegacao);
                 finish();
             }
 
@@ -136,7 +136,25 @@ public class TelaLogin extends AppCompatActivity implements View.OnClickListener
         //Início da chamada de tela caso tenha
         this.chamaCadastro();
         this.chamaEsqueciSenha();
-        this.chamaSearchFilter();
+        //this.chamaSearchFilter();
+        this.chamaMenuNavegacao();
+    }
+
+    private void chamaMenuNavegacao(){
+        btnEntrar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!(editEmail.toString().equals("")) && !(editSenha.toString().equals("")) ){
+                    usuario = new Usuario();
+                    usuario.setEmail(editEmail.getText().toString());
+                    usuario.setPassword(editSenha.getText().toString());
+                    validarLogin();
+                }else {
+                    Toast.makeText(TelaLogin.this,"Preencha os campos de e-mail e senha!",Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
     }
     
     private void chamaCadastro(){
@@ -182,8 +200,8 @@ public class TelaLogin extends AppCompatActivity implements View.OnClickListener
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
-                    Intent callTelaSearchFilter = new Intent(TelaLogin.this,TelaSearchFilter.class);
-                    startActivity(callTelaSearchFilter);
+                    Intent callTelaMenuNavegacao = new Intent(TelaLogin.this,TelaMenuNavegacao.class);
+                    startActivity(callTelaMenuNavegacao);
                     Toast.makeText(TelaLogin.this,"Login efetuado com sucesso!", Toast.LENGTH_SHORT).show();
                     finish();
                 }else{
@@ -216,7 +234,7 @@ public class TelaLogin extends AppCompatActivity implements View.OnClickListener
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        Toast.makeText(TelaLogin.this,"Não foi possível se conectar com Google!",Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -249,6 +267,8 @@ public class TelaLogin extends AppCompatActivity implements View.OnClickListener
 
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d("", "handleSignInResult:" + result.isSuccess());
+        boolean resultado = result.isSuccess();
+        Log.e("VISHHHHHHHHHHH", ""+resultado);
         if (result.isSuccess()) {
             GoogleSignInAccount account = result.getSignInAccount();
             String nameAccount = account.getDisplayName();
@@ -267,8 +287,8 @@ public class TelaLogin extends AppCompatActivity implements View.OnClickListener
 
     public void updateUI(boolean isLogin){
         if(isLogin){
-            Intent callTelaSearchFilter = new Intent(TelaLogin.this,TelaSearchFilter.class);
-            startActivity(callTelaSearchFilter);
+            Intent callTelaMenuNavegacao = new Intent(TelaLogin.this,TelaMenuNavegacao.class);
+            startActivity(callTelaMenuNavegacao);
             finish();
         }else{
 

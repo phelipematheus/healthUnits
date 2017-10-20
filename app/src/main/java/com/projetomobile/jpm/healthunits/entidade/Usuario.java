@@ -1,4 +1,4 @@
-package com.projetomobile.jpm.healthunits.Entidade;
+package com.projetomobile.jpm.healthunits.entidade;
 
 /**
  * Created by ppalmeira on 14/08/17.

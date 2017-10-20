@@ -1,4 +1,4 @@
-package com.projetomobile.jpm.healthunits.Telas;
+package com.projetomobile.jpm.healthunits.telas;
 
 import android.content.Intent;
 import android.os.Bundle;

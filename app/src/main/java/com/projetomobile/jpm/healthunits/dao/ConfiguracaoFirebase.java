@@ -1,4 +1,4 @@
-package com.projetomobile.jpm.healthunits.DAO;
+package com.projetomobile.jpm.healthunits.dao;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;

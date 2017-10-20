@@ -1,4 +1,4 @@
-package com.projetomobile.jpm.healthunits.Telas;
+package com.projetomobile.jpm.healthunits.telas;
 
 import android.content.Context;
 import android.content.Intent;
@@ -28,9 +28,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.projetomobile.jpm.healthunits.R;
-import com.projetomobile.jpm.healthunits.Service.APIInterface;
-import com.projetomobile.jpm.healthunits.Service.ControllerRetrofit;
-import com.projetomobile.jpm.healthunits.ValueObject.Estabelecimento;
+import com.projetomobile.jpm.healthunits.service.APIInterface;
+import com.projetomobile.jpm.healthunits.service.ControllerRetrofit;
+import com.projetomobile.jpm.healthunits.valueobject.Estabelecimento;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.projetomobile.jpm.healthunits.Service.ControllerRetrofit.BASE_URL;
+import static com.projetomobile.jpm.healthunits.service.ControllerRetrofit.BASE_URL;
 
 public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*, ConnectionCallbacks, OnConnectionFailedListener*/ {
 

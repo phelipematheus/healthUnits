@@ -1,4 +1,4 @@
-package com.projetomobile.jpm.healthunits.ValueObject;
+package com.projetomobile.jpm.healthunits.valueobject;
 
 import com.google.gson.annotations.SerializedName;
 

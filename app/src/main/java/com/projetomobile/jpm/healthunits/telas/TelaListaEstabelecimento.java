@@ -1,4 +1,4 @@
-package com.projetomobile.jpm.healthunits.Telas;
+package com.projetomobile.jpm.healthunits.telas;
 
 
 import android.os.Bundle;
@@ -7,10 +7,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
-import com.projetomobile.jpm.healthunits.Adaptadores.MyAdapterEstabelecimento;
+import com.projetomobile.jpm.healthunits.adaptadores.MyAdapterEstabelecimento;
 import com.projetomobile.jpm.healthunits.R;
-import com.projetomobile.jpm.healthunits.Service.APIInterface;
-import com.projetomobile.jpm.healthunits.ValueObject.Estabelecimento;
+import com.projetomobile.jpm.healthunits.service.APIInterface;
+import com.projetomobile.jpm.healthunits.valueobject.Estabelecimento;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.projetomobile.jpm.healthunits.Service.ControllerRetrofit.BASE_URL;
+import static com.projetomobile.jpm.healthunits.service.ControllerRetrofit.BASE_URL;
 
 public class TelaListaEstabelecimento extends AppCompatActivity {
 

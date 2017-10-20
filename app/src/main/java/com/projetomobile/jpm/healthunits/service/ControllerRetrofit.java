@@ -1,10 +1,10 @@
-package com.projetomobile.jpm.healthunits.Service;
+package com.projetomobile.jpm.healthunits.service;
 
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.projetomobile.jpm.healthunits.ValueObject.Estabelecimento;
+import com.projetomobile.jpm.healthunits.valueobject.Estabelecimento;
 
 import java.util.ArrayList;
 import java.util.List;

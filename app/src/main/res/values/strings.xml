@@ -17,4 +17,6 @@
     </string>
     <string name="facebook_app_id">146307169301256</string>
     <string name="fb_login_protocol_scheme">fb146307169301256</string>
+    <string name="title_activity_tela_menu_navegacao">TelaMenuNavegacao</string>
+    <string name="title_activity_tela_locais_pre_chat">TelaLocaisPreChat</string>
 </resources>

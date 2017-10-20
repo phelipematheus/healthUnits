@@ -9,13 +9,13 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -35,11 +35,14 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.projetomobile.jpm.healthunits.R;
 import com.projetomobile.jpm.healthunits.dao.ConfiguracaoFirebase;
 import com.projetomobile.jpm.healthunits.entidade.Usuario;
-import com.projetomobile.jpm.healthunits.R;
+import com.projetomobile.jpm.healthunits.valueobject.ChatMessage;
 
 import static com.projetomobile.jpm.healthunits.telas.TelaMaps.MAP_PERMISSION_ACCESS_FINE_LOCATION;
 
@@ -48,6 +51,7 @@ public class TelaLogin extends AppCompatActivity implements View.OnClickListener
 
     private FirebaseAuth autenticacao;
     private Usuario usuario;
+    private ChatMessage chatMessage = new ChatMessage();
     private EditText editEmail,editSenha;
     private Button btnEntrar;
     private TextView txtCadastro,txtEsqueciSenha;
@@ -104,15 +108,22 @@ public class TelaLogin extends AppCompatActivity implements View.OnClickListener
 
         //===========IMPLEMENTAÇÃO DO BOTÃO FACEBOOK===================================================
 
+        autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
+
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
+
+                handleFacebookAccessToken(loginResult.getAccessToken());
+
                 ProfileTracker profileTracker = new ProfileTracker() {
                     @Override
                     protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
                         Toast.makeText(TelaLogin.this,"Bem-Vindo "+currentProfile.getName()+"!",Toast.LENGTH_LONG).show();
+                        //autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
+                        //chatMessage.setMessageUser(currentProfile.getName());
                     }
                 };
                 Intent callTelaMenuNavegacao = new Intent(TelaLogin.this,TelaMenuNavegacao.class);
@@ -266,9 +277,7 @@ public class TelaLogin extends AppCompatActivity implements View.OnClickListener
     }
 
     private void handleSignInResult(GoogleSignInResult result) {
-        Log.d("", "handleSignInResult:" + result.isSuccess());
-        boolean resultado = result.isSuccess();
-        Log.e("VISHHHHHHHHHHH", ""+resultado);
+
         if (result.isSuccess()) {
             GoogleSignInAccount account = result.getSignInAccount();
             String nameAccount = account.getDisplayName();
@@ -307,8 +316,12 @@ public class TelaLogin extends AppCompatActivity implements View.OnClickListener
         }
     }
 
-    //================================================================================================
+    //================FACEBOOK========================================================================
 
-
+    //Este código pega os dados da instancia do facebook e joga na instancia do firebase caso vc tenha entrado pelo botão do facebook
+     private void handleFacebookAccessToken(AccessToken token) {
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        autenticacao.signInWithCredential(credential);
+    }
 
 }

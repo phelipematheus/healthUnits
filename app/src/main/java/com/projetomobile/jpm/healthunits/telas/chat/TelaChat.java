@@ -52,8 +52,13 @@ public class TelaChat extends AppCompatActivity {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage(emojiconEditText.getText().toString(),
-                        FirebaseAuth.getInstance().getCurrentUser().getEmail()));// Base de dados do firebase recebe a mensagem e o usuário que enviou
+                if(FirebaseAuth.getInstance().getCurrentUser().getEmail() == null) {
+                    FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage(emojiconEditText.getText().toString(),
+                            FirebaseAuth.getInstance().getCurrentUser().getDisplayName()));
+                }else {
+                    FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage(emojiconEditText.getText().toString(),
+                            FirebaseAuth.getInstance().getCurrentUser().getEmail()));// Base de dados do firebase recebe a mensagem e o usuário que enviou
+                }
                 emojiconEditText.setText("");// Zero o campo mensagem
                 emojiconEditText.requestFocus();// Volto o cursor para o campo de mensagem
             }
@@ -63,11 +68,13 @@ public class TelaChat extends AppCompatActivity {
         if(FirebaseAuth.getInstance().getCurrentUser() == null)
         {
             Toast.makeText(TelaChat.this,"Não conseguiu pegar o user do firebase", Toast.LENGTH_SHORT).show();
-            //startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder().build(),SIGN_IN_REQUEST_CODE);
-        }// startActivityForResult chama uma nova atividade e fica no aguardo do retorno(variaveis, valores) dessa nova atividade
-        else
-        {
-            Snackbar.make(activity_main,"Welcome "+FirebaseAuth.getInstance().getCurrentUser().getEmail(),Snackbar.LENGTH_SHORT).show();
+            displayChatMessage();
+        }else{
+            if(FirebaseAuth.getInstance().getCurrentUser().getEmail() == null) {
+                Snackbar.make(activity_main,"Welcome "+FirebaseAuth.getInstance().getCurrentUser().getDisplayName(),Snackbar.LENGTH_SHORT).show();
+            }else{
+                Snackbar.make(activity_main,"Welcome "+FirebaseAuth.getInstance().getCurrentUser().getEmail(),Snackbar.LENGTH_SHORT).show();
+            }
             //Load content
             displayChatMessage();
         }
@@ -88,7 +95,7 @@ public class TelaChat extends AppCompatActivity {
             @Override
             protected void populateView(View v, ChatMessage model, int position) {
 
-                //Get references to the views of list_item.xml
+                //Get references to the views of row_chat.xml
                 TextView messageText, messageUser, messageTime;
                 messageText = (EmojiconTextView) v.findViewById(R.id.message_text);
                 messageUser = (TextView) v.findViewById(R.id.message_user);
@@ -97,7 +104,6 @@ public class TelaChat extends AppCompatActivity {
                 messageText.setText(model.getMessageText());
                 messageUser.setText(model.getMessageUser());
                 messageTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)", model.getMessageTime()));
-
             }
         };
         adapter = new MyAdapterChat(firebaseListAdapter);

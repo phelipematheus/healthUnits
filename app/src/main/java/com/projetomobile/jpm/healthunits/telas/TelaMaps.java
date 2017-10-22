@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.http.AndroidHttpClient;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -25,6 +26,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.projetomobile.jpm.healthunits.R;
@@ -32,6 +35,14 @@ import com.projetomobile.jpm.healthunits.service.APIInterface;
 import com.projetomobile.jpm.healthunits.service.ControllerRetrofit;
 import com.projetomobile.jpm.healthunits.valueobject.Estabelecimento;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +52,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.projetomobile.jpm.healthunits.R.id.map;
 import static com.projetomobile.jpm.healthunits.service.ControllerRetrofit.BASE_URL;
 
 public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*, ConnectionCallbacks, OnConnectionFailedListener*/ {
@@ -278,10 +290,14 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
 
     private AutoCompleteTextView autoCompletePesquisar;
     private ImageView iconePesquisar;
-    private Button btnAlterarFiltros;
+    private Button btnTracarRota;
     private Button btnListar;
     private ControllerRetrofit controllerRetrofit = new ControllerRetrofit();
     private List<String> listEstab = new ArrayList<String>();
+    private LatLng tracaRotaLocalOrigem, tracaRotaLocalDestino;
+    private List<LatLng> listaRota;
+    private long distancia;
+    private Polyline polyline;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -290,12 +306,12 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(map);
         mapFragment.getMapAsync(this);
 
         //Criando todos as views da tela que tem id
         autoCompletePesquisar = (AutoCompleteTextView) findViewById(R.id.pesquisarAutoComplete);
-        btnAlterarFiltros = (Button) findViewById(R.id.botaoAlterarFiltros);
+        btnTracarRota = (Button) findViewById(R.id.botaoTracarRota);
         btnListar = (Button) findViewById(R.id.botaoListar);
         iconePesquisar = (ImageView) findViewById(R.id.pesquisarIcon);
 
@@ -308,6 +324,7 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
                         Float latitude = controllerRetrofit.getListaEstabelecimentos().get(j).getLatitude();
                         Float longitude = controllerRetrofit.getListaEstabelecimentos().get(j).getLongitude();
                         LatLng local = new LatLng(latitude, longitude);
+                        tracaRotaLocalDestino = local;
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(local, 10));
                     }
                 }
@@ -332,6 +349,7 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
                         Float latitude = controllerRetrofit.getListaEstabelecimentos().get(j).getLatitude();
                         Float longitude = controllerRetrofit.getListaEstabelecimentos().get(j).getLongitude();
                         LatLng local = new LatLng(latitude, longitude);
+                        tracaRotaLocalDestino = local;
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(local, 10));
                     }
                 }
@@ -341,17 +359,9 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
         //======================================================================================================
 
         //Início da chamada de tela caso tenha
-        this.chamaSearchFilter();
+        //this.chamaSearchFilter();
+        this.tracarRota();
         this.chamaAdapter();
-    }
-
-    private void chamaSearchFilter() {
-        btnAlterarFiltros.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
     }
 
     private void chamaAdapter() {
@@ -393,6 +403,7 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
             LocationListener locationListener = new LocationListener() {
                 public void onLocationChanged(Location location) {
                     LatLng me = new LatLng(location.getLatitude(), location.getLongitude());
+                    tracaRotaLocalOrigem = me;
                     mMap.addMarker(new MarkerOptions().position(me).title("Estou Aqui!!!"));
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(me, 10));
                 }
@@ -458,4 +469,142 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
             }
         });
     }
+
+    /* ***************************************** ROTA ***************************************** */
+
+    private void tracarRota() /*throws UnsupportedEncodingException*/ {
+        btnTracarRota.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //EditText etO = (EditText) findViewById(R.id.origin);
+                //EditText etD = (EditText) findViewById(R.id.destination);
+                //String origin = URLEncoder.encode(etO.getText().toString(), "UTF-8");
+                //String destination = URLEncoder.encode(etD.getText().toString(), "UTF-8");
+
+                getRoute(tracaRotaLocalOrigem, tracaRotaLocalDestino);
+                //getRoute(origin,destination);
+            }
+        });
+    }
+
+    public void getRoute(final LatLng origin, final LatLng destination){
+        new Thread(){
+            public void run(){
+
+                /*String url= "http://maps.googleapis.com/maps/api/directions/json?origin="
+                        + origin +"&destination="
+                        + destination +"&sensor=false";*/
+                String url= "http://maps.googleapis.com/maps/api/directions/json?origin="
+                        + origin.latitude+","+origin.longitude+"&destination="
+                        + destination.latitude+","+destination.longitude+"&sensor=false";
+
+
+                HttpResponse response;
+                HttpGet request;
+                AndroidHttpClient client = AndroidHttpClient.newInstance("route");
+
+                request = new HttpGet(url);
+                try {
+                    response = client.execute(request);
+                    final String answer = EntityUtils.toString(response.getEntity());
+
+                    runOnUiThread(new Runnable(){
+                        public void run(){
+                            try {
+                                //Log.i("Script", answer);
+                                listaRota = buildJSONRoute(answer);
+                                drawRoute();
+                            }
+                            catch(JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                }
+                catch(IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+    }
+
+    // PARSER JSON
+    public List<LatLng> buildJSONRoute(String json) throws JSONException{
+        JSONObject result = new JSONObject(json);
+        JSONArray routes = result.getJSONArray("routes");
+
+        distancia = routes.getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("distance").getInt("value");
+
+        JSONArray steps = routes.getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps");
+        List<LatLng> lines = new ArrayList<LatLng>();
+
+        for(int i=0; i < steps.length(); i++) {
+            Log.i("Script", "STEP: LAT: "+steps.getJSONObject(i).getJSONObject("start_location").getDouble("lat")+" | LNG: "+steps.getJSONObject(i).getJSONObject("start_location").getDouble("lng"));
+
+
+            String polyline = steps.getJSONObject(i).getJSONObject("polyline").getString("points");
+
+            for(LatLng p : decodePolyline(polyline)) {
+                lines.add(p);
+            }
+
+            Log.i("Script", "STEP: LAT: "+steps.getJSONObject(i).getJSONObject("end_location").getDouble("lat")+" | LNG: "+steps.getJSONObject(i).getJSONObject("end_location").getDouble("lng"));
+        }
+
+        return(lines);
+    }
+
+    // DECODE POLYLINE
+    private List<LatLng> decodePolyline(String encoded) {
+
+        List<LatLng> listPoints = new ArrayList<LatLng>();
+        int index = 0, len = encoded.length();
+        int lat = 0, lng = 0;
+
+        while (index < len) {
+            int b, shift = 0, result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lat += dlat;
+
+            shift = 0;
+            result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lng += dlng;
+
+            LatLng p = new LatLng((((double) lat / 1E5)), (((double) lng / 1E5)));
+            Log.i("Script", "POL: LAT: "+p.latitude+" | LNG: "+p.longitude);
+            listPoints.add(p);
+        }
+        return listPoints;
+    }
+
+    public void drawRoute(){
+        PolylineOptions po;
+
+        if(polyline == null){
+            po = new PolylineOptions();
+
+            for(int i = 0, tam = listaRota.size(); i < tam; i++){
+                po.add(listaRota.get(i));
+            }
+
+            po.color(Color.BLUE).width(4);
+            polyline = mMap.addPolyline(po);
+        }
+        else{
+            polyline.setPoints(listaRota);
+        }
+    }
+
 }

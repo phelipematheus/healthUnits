@@ -27,6 +27,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -365,6 +366,10 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
         });
         //======================================================================================================
 
+
+
+
+
         //Início da chamada de tela caso tenha
         //this.chamaSearchFilter();
         this.tracarRota();
@@ -395,6 +400,21 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
                 getLocation();
             }
         mMap.setMyLocationEnabled(true);
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+
+                try{
+                    if(tracaRotaLocalOrigem != null && marker.getPosition() != null){
+                        getRoute(tracaRotaLocalOrigem,marker.getPosition());
+                    }
+                }catch (Exception e){
+
+                }
+                return false;
+            }
+        });
     }
 
     public void getLastLocation() {

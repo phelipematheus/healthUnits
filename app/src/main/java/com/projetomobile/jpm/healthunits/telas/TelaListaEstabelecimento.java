@@ -6,9 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.WindowManager;
 
-import com.projetomobile.jpm.healthunits.adaptadores.MyAdapterEstabelecimento;
 import com.projetomobile.jpm.healthunits.R;
+import com.projetomobile.jpm.healthunits.adaptadores.MyAdapterEstabelecimento;
 import com.projetomobile.jpm.healthunits.service.APIInterface;
 import com.projetomobile.jpm.healthunits.valueobject.Estabelecimento;
 
@@ -21,6 +22,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.projetomobile.jpm.healthunits.adaptadores.MyAdapterEstabelecimento.verificaSePodeFinalizarActivity;
 import static com.projetomobile.jpm.healthunits.service.ControllerRetrofit.BASE_URL;
 
 public class TelaListaEstabelecimento extends AppCompatActivity {
@@ -34,12 +36,19 @@ public class TelaListaEstabelecimento extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tela_lista_estabelecimento);
 
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 
         recyclerView.setHasFixedSize(true);
 
         mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
+
+        if(verificaSePodeFinalizarActivity == true){
+            finish();
+            verificaSePodeFinalizarActivity = false;
+        }
 
         Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create()).build();
@@ -56,7 +65,7 @@ public class TelaListaEstabelecimento extends AppCompatActivity {
                         listEst.add(e);
 
                     }
-                    mAdapter = new MyAdapterEstabelecimento(listEst);
+                    mAdapter = new MyAdapterEstabelecimento(TelaListaEstabelecimento.this, listEst);
                     Log.e("","Funcionou");
                     recyclerView.setAdapter(mAdapter);
                 }

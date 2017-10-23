@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 
 import com.projetomobile.jpm.healthunits.R;
@@ -16,6 +17,8 @@ public class TelaPreChat extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tela_pre_chat);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         btnAtropelamento = (Button) findViewById(R.id.btn_atropelamento);
         btnInfarte = (Button) findViewById(R.id.btn_infarte);

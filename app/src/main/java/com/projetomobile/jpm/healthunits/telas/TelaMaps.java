@@ -14,11 +14,13 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -53,6 +55,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.projetomobile.jpm.healthunits.R.id.map;
+import static com.projetomobile.jpm.healthunits.adaptadores.MyAdapterEstabelecimento.estabeleci;
+import static com.projetomobile.jpm.healthunits.adaptadores.MyAdapterEstabelecimento.tracaOrigem;
 import static com.projetomobile.jpm.healthunits.service.ControllerRetrofit.BASE_URL;
 
 public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*, ConnectionCallbacks, OnConnectionFailedListener*/ {
@@ -143,7 +147,7 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
 
         //Início da chamada de tela caso tenha
         this.chamaSearchFilter();
-        this.chamaAdapter();
+        this.chamaListaEstabelecimento();
     }
 
 /*
@@ -183,7 +187,7 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
         });
     }
 
-    private void chamaAdapter() {
+    private void chamaListaEstabelecimento() {
         btnListar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -294,7 +298,8 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
     private Button btnListar;
     private ControllerRetrofit controllerRetrofit = new ControllerRetrofit();
     private List<String> listEstab = new ArrayList<String>();
-    private LatLng tracaRotaLocalOrigem, tracaRotaLocalDestino;
+    private List<Estabelecimento> listEst = new ArrayList<Estabelecimento>();
+    public LatLng tracaRotaLocalOrigem, tracaRotaLocalDestino;
     private List<LatLng> listaRota;
     private long distancia;
     private Polyline polyline;
@@ -303,6 +308,8 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tela_mapa);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -361,15 +368,16 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
         //Início da chamada de tela caso tenha
         //this.chamaSearchFilter();
         this.tracarRota();
-        this.chamaAdapter();
+        this.chamaListaEstabelecimento();
     }
 
-    private void chamaAdapter() {
+    private void chamaListaEstabelecimento() {
         btnListar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent callTelaListaEstabelecimento = new Intent(TelaMaps.this, TelaListaEstabelecimento.class);
                 startActivity(callTelaListaEstabelecimento);
+                finish();
             }
         });
     }
@@ -389,16 +397,17 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
         mMap.setMyLocationEnabled(true);
     }
 
-    private void getLastLocation() {
+    public void getLastLocation() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ) {
             Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             LatLng me = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+            tracaRotaLocalOrigem = me;
             mMap.addMarker(new MarkerOptions().position(me).title("Eu estava aqui quando o anrdoid me localizou pela última vez!!!"));
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(me, 10));
         }
     }
 
-    private void getLocation() {
+    public void getLocation() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ) {
             LocationListener locationListener = new LocationListener() {
                 public void onLocationChanged(Location location) {
@@ -452,6 +461,7 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
                 if(response.isSuccessful()){
                     for(Estabelecimento estabelecimento : response.body()){
                         listEstab.add(estabelecimento.getNomeFantasia());
+                        listEst.add(estabelecimento);
                         Float lat = estabelecimento.getLatitude();
                         Float longi = estabelecimento.getLongitude();
                         String nomeDoEstabelecimento = estabelecimento.getNomeFantasia();
@@ -472,19 +482,40 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
 
     /* ***************************************** ROTA ***************************************** */
 
-    private void tracarRota() /*throws UnsupportedEncodingException*/ {
+    public void tracarRota() /*throws UnsupportedEncodingException*/ {
         btnTracarRota.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //CASO VOCÊ QUEIRA ESCREVER A LOCALIZAÇÃO MAS TEM QUE DESCOMENTAR O "String url" do getRoute()
                 //EditText etO = (EditText) findViewById(R.id.origin);
                 //EditText etD = (EditText) findViewById(R.id.destination);
                 //String origin = URLEncoder.encode(etO.getText().toString(), "UTF-8");
                 //String destination = URLEncoder.encode(etD.getText().toString(), "UTF-8");
-
-                getRoute(tracaRotaLocalOrigem, tracaRotaLocalDestino);
-                //getRoute(origin,destination);
+                try {
+                    if(tracaRotaLocalOrigem != null && tracaRotaLocalDestino != null) {
+                        getRoute(tracaRotaLocalOrigem, tracaRotaLocalDestino);
+                        //getRoute(origin,destination);
+                    }else {
+                        Toast.makeText(TelaMaps.this,"Por favor escolha um destino!",Toast.LENGTH_LONG).show();
+                    }
+                }catch (Exception e){
+                    Toast.makeText(TelaMaps.this,"Por favor escolha um destino!",Toast.LENGTH_LONG).show();
+                }
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try{
+            LatLng tracaDestino = new LatLng(Double.parseDouble(String.valueOf(estabeleci.getLatitude())),Double.parseDouble(String.valueOf(estabeleci.getLongitude())));
+            if(tracaOrigem != null && tracaDestino != null){
+                getRoute(tracaOrigem,tracaDestino);
+            }
+        }catch (Exception e){
+
+        }
     }
 
     public void getRoute(final LatLng origin, final LatLng destination){

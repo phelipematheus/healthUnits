@@ -11,19 +11,27 @@
         android:id="@+id/txt_qual_local_ocorreu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Qual local ocorreu?"/>
+        android:text="Qual local ocorreu?"
+        android:textSize="30sp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"/>
 
     <Button
         android:id="@+id/btn_aqui_onde_estou"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Aqui onde estou!"/>
+        android:text="Aqui onde estou!"
+        android:textColor="#FFFFFF"
+        app:backgroundTint="#00a6ff"/>
 
     <Button
         android:id="@+id/btn_outro_local"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Outro local"/>
+        android:text="Outro local"
+        android:textColor="#FFFFFF"
+        app:backgroundTint="#00a6ff"/>
 
 
 </LinearLayout>

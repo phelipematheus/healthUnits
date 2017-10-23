@@ -10,7 +10,9 @@ import com.projetomobile.jpm.healthunits.R;
 import com.projetomobile.jpm.healthunits.telas.chat.TelaChat;
 import com.projetomobile.jpm.healthunits.telas.chat.TelaPreChat;
 
-public class TelaMenuNavegacao extends AppCompatActivity {
+import static com.projetomobile.jpm.healthunits.adaptadores.MyAdapterEstabelecimento.verificaSePodeFinalizarActivity;
+
+public class TelaMenuNavegacao extends AppCompatActivity{
 
     public Button btnChat, btnPrecisoDeSocorro, btnListaHospitais, btnMapaDosHospitais, btnSair;
 
@@ -25,11 +27,11 @@ public class TelaMenuNavegacao extends AppCompatActivity {
         btnMapaDosHospitais = (Button) findViewById(R.id.btn_mapa_hospitais);
         btnSair = (Button) findViewById(R.id.btn_sair);
 
-        chamaMapaDosHospitais();
-        chamaListaHospitais();
-        chamaPrecisoDeSocorro();
-        chamaChat();
-        chamaSair();
+        this.chamaMapaDosHospitais();
+        this.chamaListaHospitais();
+        this.chamaPrecisoDeSocorro();
+        this.chamaChat();
+        this.chamaSair();
     }
 
     private void chamaMapaDosHospitais(){
@@ -46,6 +48,7 @@ public class TelaMenuNavegacao extends AppCompatActivity {
         btnListaHospitais.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
+                verificaSePodeFinalizarActivity = false;
                 Intent callTelaListaHospitais = new Intent(TelaMenuNavegacao.this,TelaListaEstabelecimento.class);
                 startActivity(callTelaListaHospitais);
             }

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
 
 
@@ -22,12 +24,12 @@
         android:layout_marginTop="11dp"
         android:background="@drawable/rounded_edittext"
         android:hint="Pesquisar..."
-        android:paddingLeft="10dp"
+        android:paddingLeft="50dp"
         android:paddingRight="45dp"
         android:textStyle="italic"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:layout_marginRight="60dp"
+        android:layout_marginRight="8dp"
         android:layout_marginLeft="8dp"/>
 
     <ImageView
@@ -36,48 +38,25 @@
         android:layout_height="40dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_marginRight="67dp"
+        android:layout_marginRight="15dp"
         android:layout_marginTop="11dp"
         android:src="@drawable/pesquisar" />
 
-    <LinearLayout
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/botaoTracarRota"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="7dp"
-            android:layout_marginRight="8dp"
-            android:layout_weight="0.5"
-            android:background="@drawable/rounded_button_blue"
-            android:fontFamily="sans-serif"
-            android:text="TRAÇAR ROTA"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            android:textSize="20dp" />
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginLeft="12dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:id="@+id/botaoListar"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/icone_lista"/>
 
-        <Button
-            android:id="@+id/botaoListar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/botaoTracarRota"
-            android:layout_alignBottom="@+id/botaoTracarRota"
-            android:layout_marginTop="0dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="10dp"
-            android:layout_weight="0.5"
-            android:textSize="20dp"
-            android:background="@drawable/rounded_button_blue"
-            android:text="Listar"
-            android:textColor="@android:color/white" />
 
-    </LinearLayout>
+
+
 
 </RelativeLayout>

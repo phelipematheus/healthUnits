@@ -18,7 +18,6 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -26,6 +25,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -95,10 +95,10 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
                 System.out.println(s);
 
                 //Localização dos outros
-                for (int j = 0; j < controllerRetrofit.getListaEstabelecimentos().size(); j++) {
-                    Float lat = controllerRetrofit.getListaEstabelecimentos().get(j).getLatitude();
-                    Float longi = controllerRetrofit.getListaEstabelecimentos().get(j).getLongitude();
-                    String nomeDoEstabelecimento = controllerRetrofit.getListaEstabelecimentos().get(j).getNomeFantasia();
+                for (int j = 0; j < listEst.size(); j++) {
+                    Float lat = listEst.get(j).getLatitude();
+                    Float longi = listEst.get(j).getLongitude();
+                    String nomeDoEstabelecimento = listEst.get(j).getNomeFantasia();
                     mMap.addMarker(new MarkerOptions().position(new LatLng(lat, longi)).title(nomeDoEstabelecimento));
                 }
 
@@ -240,10 +240,10 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(voce, 12.0f));
 
             //Localização dos outros
-            for(int j = 0; j<controllerRetrofit.getListaEstabelecimentos().size(); j++){
-                Float lat = controllerRetrofit.getListaEstabelecimentos().get(j).getLatitude();
-                Float longi = controllerRetrofit.getListaEstabelecimentos().get(j).getLongitude();
-                String nomeDoEstabelecimento = controllerRetrofit.getListaEstabelecimentos().get(j).getNomeFantasia();
+            for(int j = 0; j<listEst.size(); j++){
+                Float lat = listEst.get(j).getLatitude();
+                Float longi = listEst.get(j).getLongitude();
+                String nomeDoEstabelecimento = listEst.get(j).getNomeFantasia();
                 mMap.addMarker(new MarkerOptions().position(new LatLng(lat,longi)).title(nomeDoEstabelecimento));
             }
             Log.e("Resposta","ESTA NO IF");
@@ -293,14 +293,15 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
     private GoogleMap mMap;
     private LocationManager locationManager;
 
+    private APIInterface apiEstabelecimento;
+
     private AutoCompleteTextView autoCompletePesquisar;
     private ImageView iconePesquisar;
-    private Button btnTracarRota;
-    private Button btnListar;
+    private ImageView btnListar;
     private ControllerRetrofit controllerRetrofit = new ControllerRetrofit();
     private List<String> listEstab = new ArrayList<String>();
     private List<Estabelecimento> listEst = new ArrayList<Estabelecimento>();
-    public LatLng tracaRotaLocalOrigem, tracaRotaLocalDestino;
+    public LatLng tracaRotaLocalOrigem, tracaRotaLocalDestino, tracaRotaLocalOrigemVerifica;
     private List<LatLng> listaRota;
     private long distancia;
     private Polyline polyline;
@@ -319,23 +320,33 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
 
         //Criando todos as views da tela que tem id
         autoCompletePesquisar = (AutoCompleteTextView) findViewById(R.id.pesquisarAutoComplete);
-        btnTracarRota = (Button) findViewById(R.id.botaoTracarRota);
-        btnListar = (Button) findViewById(R.id.botaoListar);
+        btnListar = (ImageView) findViewById(R.id.botaoListar);
         iconePesquisar = (ImageView) findViewById(R.id.pesquisarIcon);
 
         //=========================Pesquisar================================================================
         iconePesquisar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                for(int j = 0; j<controllerRetrofit.getListaEstabelecimentos().size(); j++) {
-                    if (autoCompletePesquisar.getText().toString().toUpperCase().equals(controllerRetrofit.getListaEstabelecimentos().get(j).getNomeFantasia())) {
-                        Float latitude = controllerRetrofit.getListaEstabelecimentos().get(j).getLatitude();
-                        Float longitude = controllerRetrofit.getListaEstabelecimentos().get(j).getLongitude();
+                for(int j = 0; j<listEst.size(); j++) {
+                    if (autoCompletePesquisar.getText().toString().toUpperCase().equals(listEst.get(j).getNomeFantasia())) {
+                        Float latitude = listEst.get(j).getLatitude();
+                        Float longitude = listEst.get(j).getLongitude();
                         LatLng local = new LatLng(latitude, longitude);
                         tracaRotaLocalDestino = local;
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(local, 10));
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(local, (float) 14.5));
+                        try {
+                            if(tracaRotaLocalOrigem != null && tracaRotaLocalDestino != null) {
+                                getRoute(tracaRotaLocalOrigem, tracaRotaLocalDestino);
+                                //getRoute(origin,destination);
+                            }else {
+                                Toast.makeText(TelaMaps.this,"Por favor escolha um destino!",Toast.LENGTH_LONG).show();
+                            }
+                        }catch (Exception e){
+                            Toast.makeText(TelaMaps.this,"Por favor escolha um destino!",Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
+
             }
         });
 
@@ -352,27 +363,32 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String selection = (String)parent.getItemAtPosition(position);
-                for(int j = 0; j<controllerRetrofit.getListaEstabelecimentos().size(); j++) {
-                    if (selection.equals(controllerRetrofit.getListaEstabelecimentos().get(j).getNomeFantasia())) {
-                        Float latitude = controllerRetrofit.getListaEstabelecimentos().get(j).getLatitude();
-                        Float longitude = controllerRetrofit.getListaEstabelecimentos().get(j).getLongitude();
+                for(int j = 0; j<listEst.size(); j++) {
+                    if (selection.equals(listEst.get(j).getNomeFantasia())) {
+                        Float latitude = listEst.get(j).getLatitude();
+                        Float longitude = listEst.get(j).getLongitude();
                         LatLng local = new LatLng(latitude, longitude);
                         tracaRotaLocalDestino = local;
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(local, 10));
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(local, (float) 14.5));
+                        try {
+                            if(tracaRotaLocalOrigem != null && tracaRotaLocalDestino != null) {
+                                getRoute(tracaRotaLocalOrigem, tracaRotaLocalDestino);
+                                //getRoute(origin,destination);
+                            }else {
+                                Toast.makeText(TelaMaps.this,"Por favor escolha um destino!",Toast.LENGTH_LONG).show();
+                            }
+                        }catch (Exception e){
+                            Toast.makeText(TelaMaps.this,"Por favor escolha um destino!",Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
+
 
             }
         });
         //======================================================================================================
 
 
-
-
-
-        //Início da chamada de tela caso tenha
-        //this.chamaSearchFilter();
-        this.tracarRota();
         this.chamaListaEstabelecimento();
     }
 
@@ -399,7 +415,8 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
                 getLastLocation();
                 getLocation();
             }
-        mMap.setMyLocationEnabled(true);
+        mMap.setMyLocationEnabled(false);
+        mMap.setBuildingsEnabled(true);
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -422,8 +439,41 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
             Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             LatLng me = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
             tracaRotaLocalOrigem = me;
-            mMap.addMarker(new MarkerOptions().position(me).title("Eu estava aqui quando o anrdoid me localizou pela última vez!!!"));
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(me, 10));
+            MarkerOptions eu = new MarkerOptions().position(me).title("Eu estava aqui quando o anrdoid me localizou pela última vez!!!").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+            if(tracaRotaLocalOrigemVerifica != null){
+                //mMap.addMarker(eu.visible(false));
+                mMap.clear();
+            }else{
+                mMap.clear();
+                mMap.addMarker(eu.visible(true));
+            }
+
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(me, (float) 14.5));
+
+            Call<List<Estabelecimento>> callLatLong = apiEstabelecimento.listEstabelecimentoRaio(String.valueOf(me.latitude), String.valueOf(me.longitude),"500");
+            callLatLong.enqueue(new Callback<List<Estabelecimento>>() {
+                @Override
+                public void onResponse(Call<List<Estabelecimento>> call, Response<List<Estabelecimento>> response) {
+                    if(response.isSuccessful()){
+                        for(Estabelecimento estabelecimento : response.body()){
+                            listEstab.add(estabelecimento.getNomeFantasia());
+                            listEst.add(estabelecimento);
+                            Float lat = estabelecimento.getLatitude();
+                            Float longi = estabelecimento.getLongitude();
+                            String nomeDoEstabelecimento = estabelecimento.getNomeFantasia();
+                            mMap.addMarker(new MarkerOptions().position(new LatLng(lat,longi)).title(nomeDoEstabelecimento).icon(BitmapDescriptorFactory.fromResource( R.mipmap.marker)));
+                        }
+                        Log.e("","PASSOU222!");
+                    }else {
+                        Log.e("", "NAO PASSOU222");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<Estabelecimento>> call, Throwable t) {
+                    Log.e("", "NAO PASSOU333");
+                }
+            });
         }
     }
 
@@ -433,8 +483,35 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
                 public void onLocationChanged(Location location) {
                     LatLng me = new LatLng(location.getLatitude(), location.getLongitude());
                     tracaRotaLocalOrigem = me;
-                    mMap.addMarker(new MarkerOptions().position(me).title("Estou Aqui!!!"));
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(me, 10));
+                    tracaRotaLocalOrigemVerifica = me;
+                    //mMap.clear();
+                    mMap.addMarker(new MarkerOptions().position(me).title("Estou Aqui!!!").icon( BitmapDescriptorFactory.defaultMarker( BitmapDescriptorFactory.HUE_ORANGE )));
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(me, (float) 14.5));
+
+                    Call<List<Estabelecimento>> callLatLong = apiEstabelecimento.listEstabelecimentoRaio(String.valueOf(me.latitude), String.valueOf(me.longitude),"500");
+                    callLatLong.enqueue(new Callback<List<Estabelecimento>>() {
+                        @Override
+                        public void onResponse(Call<List<Estabelecimento>> call, Response<List<Estabelecimento>> response) {
+                            if(response.isSuccessful()){
+                                for(Estabelecimento estabelecimento : response.body()){
+                                    listEstab.add(estabelecimento.getNomeFantasia());
+                                    listEst.add(estabelecimento);
+                                    Float lat = estabelecimento.getLatitude();
+                                    Float longi = estabelecimento.getLongitude();
+                                    String nomeDoEstabelecimento = estabelecimento.getNomeFantasia();
+                                    mMap.addMarker(new MarkerOptions().position(new LatLng(lat,longi)).title(nomeDoEstabelecimento).icon(BitmapDescriptorFactory.fromResource( R.mipmap.marker)));
+                                }
+                                Log.e("","PASSOU222!");
+                            }else {
+                                Log.e("", "NAO PASSOU222");
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<List<Estabelecimento>> call, Throwable t) {
+                            Log.e("", "NAO PASSOU333");
+                        }
+                    });
                 }
 
                 public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -472,7 +549,7 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
         Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson)).build();
 
-        APIInterface apiEstabelecimento = retrofit.create(APIInterface.class);
+        apiEstabelecimento = retrofit.create(APIInterface.class);
 
         Call<List<Estabelecimento>> call = apiEstabelecimento.listEstabelecimento();
         call.enqueue(new Callback<List<Estabelecimento>>() {
@@ -485,7 +562,7 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
                         Float lat = estabelecimento.getLatitude();
                         Float longi = estabelecimento.getLongitude();
                         String nomeDoEstabelecimento = estabelecimento.getNomeFantasia();
-                        mMap.addMarker(new MarkerOptions().position(new LatLng(lat,longi)).title(nomeDoEstabelecimento));
+                        mMap.addMarker(new MarkerOptions().position(new LatLng(lat,longi)).title(nomeDoEstabelecimento).icon(BitmapDescriptorFactory.fromResource( R.mipmap.marker)));
                     }
                     Log.e("","PASSOU!");
                 }else {
@@ -498,32 +575,10 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
 
             }
         });
+
     }
 
     /* ***************************************** ROTA ***************************************** */
-
-    public void tracarRota() /*throws UnsupportedEncodingException*/ {
-        btnTracarRota.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //CASO VOCÊ QUEIRA ESCREVER A LOCALIZAÇÃO MAS TEM QUE DESCOMENTAR O "String url" do getRoute()
-                //EditText etO = (EditText) findViewById(R.id.origin);
-                //EditText etD = (EditText) findViewById(R.id.destination);
-                //String origin = URLEncoder.encode(etO.getText().toString(), "UTF-8");
-                //String destination = URLEncoder.encode(etD.getText().toString(), "UTF-8");
-                try {
-                    if(tracaRotaLocalOrigem != null && tracaRotaLocalDestino != null) {
-                        getRoute(tracaRotaLocalOrigem, tracaRotaLocalDestino);
-                        //getRoute(origin,destination);
-                    }else {
-                        Toast.makeText(TelaMaps.this,"Por favor escolha um destino!",Toast.LENGTH_LONG).show();
-                    }
-                }catch (Exception e){
-                    Toast.makeText(TelaMaps.this,"Por favor escolha um destino!",Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-    }
 
     @Override
     protected void onResume() {

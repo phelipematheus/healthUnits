@@ -1,37 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#FFFFFF"
     tools:context="com.projetomobile.jpm.healthunits.telas.chat.TelaLocaisPreChat">
 
-    <TextView
-        android:id="@+id/txt_qual_local_ocorreu"
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map_enquete"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Qual local ocorreu?"
-        android:textSize="30sp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:gravity="center"/>
+        android:layout_height="match_parent"
+        tools:context=".telas.TelaMaps"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
 
     <Button
-        android:id="@+id/btn_aqui_onde_estou"
-        android:layout_width="match_parent"
+        android:id="@+id/btn_ok"
+        android:layout_width="50dp"
         android:layout_height="wrap_content"
-        android:text="Aqui onde estou!"
+        android:text="OK"
         android:textColor="#FFFFFF"
-        app:backgroundTint="#00a6ff"/>
+        app:backgroundTint="#459f60"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"/>
 
-    <Button
-        android:id="@+id/btn_outro_local"
+    <LinearLayout
+        android:id="@+id/linearLayout_preChat"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Outro local"
-        android:textColor="#FFFFFF"
-        app:backgroundTint="#00a6ff"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="#FFFFFF"
+        android:visibility="visible">
+        <TextView
+            android:id="@+id/txt_qual_local_ocorreu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Qual local ocorreu?"
+            android:textSize="30sp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"/>
+        <Button
+            android:id="@+id/btn_aqui_onde_estou"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Aqui onde estou!"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="#00a6ff"/>
 
+        <Button
+            android:id="@+id/btn_outro_local"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Outro local"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="#00a6ff"/>
+    </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

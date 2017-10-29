@@ -11,6 +11,15 @@
         android:layout_alignParentTop="true"
         android:textStyle="normal|bold" />
 
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/image_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:visibility="gone"
+        />
+
     <TextView
         android:id="@+id/message_time"
         android:layout_width="wrap_content"

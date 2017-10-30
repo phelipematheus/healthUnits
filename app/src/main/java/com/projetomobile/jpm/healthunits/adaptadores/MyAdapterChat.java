@@ -1,11 +1,15 @@
 package com.projetomobile.jpm.healthunits.adaptadores;
 
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
@@ -23,6 +27,7 @@ public class MyAdapterChat extends RecyclerView.Adapter<MyAdapterChat.ViewHolder
 
         public TextView messageText, messageUser, messageTime;
         public View layout;
+        public ImageView messageBitmap;
 
         public ViewHolder(View v) {
             super(v);
@@ -30,6 +35,7 @@ public class MyAdapterChat extends RecyclerView.Adapter<MyAdapterChat.ViewHolder
             messageText = (EmojiconTextView) v.findViewById(R.id.message_text);
             messageUser = (TextView) v.findViewById(R.id.message_user);
             messageTime = (TextView) v.findViewById(R.id.message_time);
+            messageBitmap = (ImageView) v.findViewById(R.id.message_bitmap);
         }
     }
     // Provide a suitable constructor (depends on the kind of dataset)
@@ -57,6 +63,19 @@ public class MyAdapterChat extends RecyclerView.Adapter<MyAdapterChat.ViewHolder
         holder.messageText.setText(chatMessage.getMessageText());
         holder.messageUser.setText(chatMessage.getMessageUser());
         holder.messageTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)", chatMessage.getMessageTime()));
+        try {//converte o dado string para bitmap
+            if(chatMessage.getMessageBitmap() != null){
+                byte [] encodeByte= Base64.decode(chatMessage.getMessageBitmap(),Base64.DEFAULT);
+                Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+                holder.messageBitmap.setImageBitmap(bitmap);
+            }else{
+
+            }
+
+        } catch(Exception e) {
+            e.getMessage();
+        }
+
     }
 
     // Return the size of your dataset (invoked by the layout manager)

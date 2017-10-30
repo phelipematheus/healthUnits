@@ -11,7 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.util.Base64;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -25,18 +25,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.projetomobile.jpm.healthunits.R;
-import com.projetomobile.jpm.healthunits.valueobject.Estabelecimento;
 
-import java.util.List;
+import java.io.ByteArrayOutputStream;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-import static com.projetomobile.jpm.healthunits.R.id.map;
 import static com.projetomobile.jpm.healthunits.telas.TelaMaps.MAP_PERMISSION_ACCESS_FINE_LOCATION;
 
 public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCallback {
@@ -46,9 +39,8 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
     public Button btnAquiOndeEstou, btnOutroLocal, btnOk;
     private GoogleMap mMap;
     private LocationManager locationManager;
-    private LatLng novoLocal;
-
-
+    private SupportMapFragment mapFragment;
+    private LatLng ondeEstou;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +50,13 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         btnOk = (Button) findViewById(R.id.btn_ok);
-        linearLayoutPreChat = (LinearLayout) findViewById(R.id.linearLayout_preChat);
+        linearLayoutPreChat = (LinearLayout) findViewById(R.id.linear_layout_locais_chat);
         txtQualLocalOcorreu = (TextView) findViewById(R.id.txt_qual_local_ocorreu);
         btnAquiOndeEstou = (Button) findViewById(R.id.btn_aqui_onde_estou);
         btnOutroLocal = (Button) findViewById(R.id.btn_outro_local);
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(map);
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.mapa_enquete);
         mapFragment.getMapAsync(this);
 
         chamaAquiOndeEstou();
@@ -76,7 +68,7 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(novoLocal, (float) 14.5));
+
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, MAP_PERMISSION_ACCESS_FINE_LOCATION);
         } else {
@@ -86,12 +78,30 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
 
     }
 
+    public void getLastLocation() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ) {
+            Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            LatLng me = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+            ondeEstou = me;
+            mMap.clear();
+            MarkerOptions eu = new MarkerOptions().position(me).title("Eu estava aqui quando o anrdoid me localizou pela última vez!!!").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+            mMap.addMarker(eu);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, (float) 14.5));
+
+        }
+    }
+
     public void getLocation() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ) {
             LocationListener locationListener = new LocationListener() {
                 public void onLocationChanged(Location location) {
                     LatLng me = new LatLng(location.getLatitude(), location.getLongitude());
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(me, (float) 14.5));
+                    ondeEstou = me;
+                    mMap.clear();
+                    mMap.addMarker(new MarkerOptions().position(me).title("Estou Aqui!!!").icon( BitmapDescriptorFactory.defaultMarker( BitmapDescriptorFactory.HUE_ORANGE )));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, (float) 14.5));
+
+
                 }
 
                 public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -104,21 +114,6 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
                 }
             };
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 40000, 0, locationListener);
-        }
-    }
-
-    public void getLastLocation() {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ) {
-
-            Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-            LatLng me = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(me, (float) 14.5));
-
-            MarkerOptions eu = new MarkerOptions().position(me).title("Eu estava aqui quando o anrdoid me localizou pela última vez!!!").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(me, (float) 14.5));
-
         }
     }
 
@@ -153,13 +148,26 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
 
     private void CaptureScreen() {
         if(mMap != null){
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ondeEstou, (float) 14.5));
             GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
                 @Override
                 public void onSnapshotReady(Bitmap snapshot) {
                     // TODO Auto-generated method stub
                     try {
                         Intent calltelaChat = new Intent(TelaLocaisPreChat.this,TelaChat.class);
-                        calltelaChat.putExtra("BITMAP", snapshot);
+
+                        Bitmap resizedBitmap = Bitmap.createBitmap(snapshot, 0, 400, snapshot.getWidth(), 600);
+
+                        ByteArrayOutputStream bao = new ByteArrayOutputStream();
+                        resizedBitmap.compress(Bitmap.CompressFormat.PNG, 100, bao);
+                        resizedBitmap.recycle();
+                        byte[] byteArray = bao.toByteArray();
+                        String imageB64 = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+                        calltelaChat.putExtra("ImageB64", imageB64);
+
+                        Toast.makeText(TelaLocaisPreChat.this, "Local capturado com sucesso!", Toast.LENGTH_LONG).show();
+
                         startActivity(calltelaChat);
                     } catch (Exception e) {
                         e.printStackTrace();

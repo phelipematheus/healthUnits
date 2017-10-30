@@ -55,7 +55,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.projetomobile.jpm.healthunits.R.id.map;
 import static com.projetomobile.jpm.healthunits.adaptadores.MyAdapterEstabelecimento.estabeleci;
 import static com.projetomobile.jpm.healthunits.adaptadores.MyAdapterEstabelecimento.tracaOrigem;
 import static com.projetomobile.jpm.healthunits.service.ControllerRetrofit.BASE_URL;
@@ -91,7 +90,7 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         // TEMOS QUE CRIAR UM NOVO MAPA!!!!
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map_enquete);
+                .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         //Criando todos as views da tela que tem id

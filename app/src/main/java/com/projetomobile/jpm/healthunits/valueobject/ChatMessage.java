@@ -1,7 +1,5 @@
 package com.projetomobile.jpm.healthunits.valueobject;
 
-import android.graphics.Bitmap;
-
 import java.util.Date;
 
 
@@ -9,16 +7,24 @@ public class ChatMessage {
     private String messageText;
     private String messageUser;
     private long messageTime;
-    private Bitmap bm;
+    private String messageBitmap;
 
-    public ChatMessage(String messageText, String messageUser, Bitmap bm) {
+    public ChatMessage(String messageText, String messageUser, String messageBitmap) {
         this.messageText = messageText;
         this.messageUser = messageUser;
         this.messageTime = new Date().getTime();
-        this.bm = bm;
+        this.messageBitmap = messageBitmap;
     }
 
     public ChatMessage() {
+    }
+
+    public String getMessageBitmap() {
+        return messageBitmap;
+    }
+
+    public void setMessageBitmap(String messageBitmap) {
+        this.messageBitmap = messageBitmap;
     }
 
     public String getMessageText() {
@@ -43,13 +49,5 @@ public class ChatMessage {
 
     public void setMessageTime(long messageTime) {
         this.messageTime = messageTime;
-    }
-
-    public Bitmap getBm() {
-        return bm;
-    }
-
-    public void setBm(Bitmap bm) {
-        this.bm = bm;
     }
 }

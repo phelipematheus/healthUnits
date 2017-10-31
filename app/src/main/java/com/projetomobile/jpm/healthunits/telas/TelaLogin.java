@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -40,6 +41,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.projetomobile.jpm.healthunits.R;
 import com.projetomobile.jpm.healthunits.dao.ConfiguracaoFirebase;
 import com.projetomobile.jpm.healthunits.entidade.Usuario;
@@ -155,6 +157,17 @@ public class TelaLogin extends AppCompatActivity implements View.OnClickListener
         this.chamaMenuNavegacao();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseUser user = autenticacao.getCurrentUser();
+        LoginManager.getInstance();
+        if(user != null){
+            Intent telaMenu = new Intent(this,TelaMenuNavegacao.class);
+            startActivity(telaMenu);
+        }
+    }
+
     private void chamaMenuNavegacao(){
         btnEntrar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -196,7 +209,7 @@ public class TelaLogin extends AppCompatActivity implements View.OnClickListener
         btnEntrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!(editEmail.toString().equals("")) && !(editSenha.toString().equals("")) ){
+                if(!(editEmail.getText().toString().equals("")) && !(editSenha.getText().toString().equals(""))){
                     usuario = new Usuario();
                     usuario.setEmail(editEmail.getText().toString());
                     usuario.setPassword(editSenha.getText().toString());
@@ -210,20 +223,20 @@ public class TelaLogin extends AppCompatActivity implements View.OnClickListener
     }
 
     private void validarLogin(){
-        autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
-        autenticacao.signInWithEmailAndPassword(usuario.getEmail(),usuario.getPassword()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()){
-                    Intent callTelaMenuNavegacao = new Intent(TelaLogin.this,TelaMenuNavegacao.class);
-                    startActivity(callTelaMenuNavegacao);
-                    Toast.makeText(TelaLogin.this,"Login efetuado com sucesso!", Toast.LENGTH_SHORT).show();
-                    finish();
-                }else{
-                    Toast.makeText(TelaLogin.this,"Usuário ou senha incorretos!", Toast.LENGTH_SHORT).show();
+            autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
+            autenticacao.signInWithEmailAndPassword(usuario.getEmail(), usuario.getPassword()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()) {
+                        Intent callTelaMenuNavegacao = new Intent(TelaLogin.this, TelaMenuNavegacao.class);
+                        startActivity(callTelaMenuNavegacao);
+                        Toast.makeText(TelaLogin.this, "Login efetuado com sucesso!", Toast.LENGTH_SHORT).show();
+                        finish();
+                    } else {
+                        Toast.makeText(TelaLogin.this, "Usuário ou senha incorretos!", Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
-        });
+            });
     }
 
     //Tratando o botão voltar
@@ -325,7 +338,18 @@ public class TelaLogin extends AppCompatActivity implements View.OnClickListener
     //Este código pega os dados da instancia do facebook e joga na instancia do firebase caso vc tenha entrado pelo botão do facebook
      private void handleFacebookAccessToken(AccessToken token) {
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        autenticacao.signInWithCredential(credential);
+        autenticacao.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()){
+                    Log.d("TelaLogin","SUCESSO");
+                }
+                else{
+                    Log.d("TelaLogin","FAIL");
+                    Log.e("TelaLogin", task.getException().toString());
+                }
+            }
+        });
     }
 
 }

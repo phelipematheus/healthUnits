@@ -161,7 +161,6 @@ public class TelaLogin extends AppCompatActivity implements View.OnClickListener
     protected void onStart() {
         super.onStart();
         FirebaseUser user = autenticacao.getCurrentUser();
-        LoginManager.getInstance();
         if(user != null){
             Intent telaMenu = new Intent(this,TelaMenuNavegacao.class);
             startActivity(telaMenu);
@@ -172,7 +171,7 @@ public class TelaLogin extends AppCompatActivity implements View.OnClickListener
         btnEntrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!(editEmail.toString().equals("")) && !(editSenha.toString().equals("")) ){
+                if(!(editEmail.getText().toString().equals("")) && !(editSenha.getText().toString().equals("")) ){
                     usuario = new Usuario();
                     usuario.setEmail(editEmail.getText().toString());
                     usuario.setPassword(editSenha.getText().toString());

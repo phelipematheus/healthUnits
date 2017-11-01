@@ -5,8 +5,12 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
+import com.facebook.login.LoginManager;
+import com.google.firebase.auth.FirebaseAuth;
 import com.projetomobile.jpm.healthunits.R;
+import com.projetomobile.jpm.healthunits.dao.ConfiguracaoFirebase;
 import com.projetomobile.jpm.healthunits.telas.chat.TelaChat;
 import com.projetomobile.jpm.healthunits.telas.chat.TelaPreChat;
 
@@ -14,7 +18,9 @@ import static com.projetomobile.jpm.healthunits.adaptadores.MyAdapterEstabelecim
 
 public class TelaMenuNavegacao extends AppCompatActivity{
 
-    public Button btnChat, btnPrecisoDeSocorro, btnListaHospitais, btnMapaDosHospitais, btnSair;
+    public ImageView btnPrecisoDeSocorro;
+    public Button btnChat, btnListaHospitais, btnMapaDosHospitais, btnSair;
+    private FirebaseAuth autenticacao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,7 +28,7 @@ public class TelaMenuNavegacao extends AppCompatActivity{
         setContentView(R.layout.tela_menu_navegacao);
 
         btnChat = (Button) findViewById(R.id.btn_chat);
-        btnPrecisoDeSocorro = (Button) findViewById(R.id.btn_pre_chat);
+        btnPrecisoDeSocorro = (ImageView) findViewById(R.id.btn_pre_chat);
         btnListaHospitais = (Button) findViewById(R.id.btn_lista_hospitais);
         btnMapaDosHospitais = (Button) findViewById(R.id.btn_mapa_hospitais);
         btnSair = (Button) findViewById(R.id.btn_sair);
@@ -79,7 +85,9 @@ public class TelaMenuNavegacao extends AppCompatActivity{
         btnSair.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                //Fazer o Logout aqui!!!
+                autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
+                autenticacao.signOut();
+                LoginManager.getInstance().logOut();
                 finish();
             }
         });

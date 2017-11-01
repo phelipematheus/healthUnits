@@ -14,7 +14,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.WindowManager;
+import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
@@ -35,8 +40,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static com.projetomobile.jpm.healthunits.adaptadores.MyAdapterEstabelecimento.verificaSePodeFinalizarActivity;
 import static com.projetomobile.jpm.healthunits.service.ControllerRetrofit.BASE_URL;
 import static com.projetomobile.jpm.healthunits.telas.TelaMaps.MAP_PERMISSION_ACCESS_FINE_LOCATION;
+import static com.projetomobile.jpm.healthunits.telas.TelaMaps.PLAY_SERVICES_RESOLUTION_REQUEST;
 
-public class TelaListaEstabelecimento extends AppCompatActivity implements OnMapReadyCallback {
+public class TelaListaEstabelecimento extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -45,6 +51,9 @@ public class TelaListaEstabelecimento extends AppCompatActivity implements OnMap
     private LatLng origem;
     private LocationManager locationManager;
     private APIInterface apiEstabelecimento;
+
+    private Location mLastLocation;
+    private GoogleApiClient mGoogleApiClient;
 
     private List<Estabelecimento> listEst = new ArrayList<Estabelecimento>();
 
@@ -61,6 +70,16 @@ public class TelaListaEstabelecimento extends AppCompatActivity implements OnMap
 
         mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
+
+        //SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        //        .findFragmentById(R.id.map);
+        //mapFragment.getMapAsync(this);
+
+        // Primeiramente precisamos checar a disponibilidade da play services
+        if (checkPlayServices()) {
+            // Bildando o cliente da google api
+            buildGoogleApiClient();
+        }
 
         if(verificaSePodeFinalizarActivity == true){
             finish();
@@ -79,6 +98,7 @@ public class TelaListaEstabelecimento extends AppCompatActivity implements OnMap
         } else {
             getLastLocation();
             getLocation();
+            displayLocation();
         }
 
         Call<List<Estabelecimento>> call = apiEstabelecimento.listEstabelecimento();
@@ -91,9 +111,12 @@ public class TelaListaEstabelecimento extends AppCompatActivity implements OnMap
                         listEst.add(e);
 
                     }
-                    mAdapter = new MyAdapterEstabelecimento(TelaListaEstabelecimento.this, listEst);
-                    Log.e("","Funcionou");
-                    recyclerView.setAdapter(mAdapter);
+
+                    if(origem != null) {
+                        mAdapter = new MyAdapterEstabelecimento(TelaListaEstabelecimento.this, listEst,origem);
+                        Log.e("", "Funcionou");
+                        recyclerView.setAdapter(mAdapter);
+                    }
                 }
 
             }
@@ -199,10 +222,83 @@ public class TelaListaEstabelecimento extends AppCompatActivity implements OnMap
         } else {
             getLastLocation();
             getLocation();
+            displayLocation();
+
         }
         //mMap.setMyLocationEnabled(true);
     }
 
+    /* ******************Localização com a LocationServices API******************************** */
+
+    protected synchronized void buildGoogleApiClient() {
+        // Cria um cliente da google API
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API).build();
+    }
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil
+                .isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Toast.makeText(getApplicationContext(),
+                        "Não foi possível achar a google play services", Toast.LENGTH_LONG)
+                        .show();
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private void displayLocation() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, MAP_PERMISSION_ACCESS_FINE_LOCATION);
+            return;
+        }
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (mLastLocation != null) {
+            //Minha localização
+            double latitude = mLastLocation.getLatitude();
+            double longitude = mLastLocation.getLongitude();
+            LatLng me = new LatLng(latitude, longitude);
+            origem = me;
+            Log.e("Resposta","ESTA NO IF");
+        } else {
+            Log.e("RESPOSTA","ESTÁ NO ELSE");
+        }
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkPlayServices();
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        Log.i("", "Connection failed:  "
+                + result.getErrorCode());
+    }
+    @Override
+    public void onConnected(Bundle arg0) {
+        // Once connected with google api, get the location
+        displayLocation();
+    }
+    @Override
+    public void onConnectionSuspended(int arg0) {
+        mGoogleApiClient.connect();
+    }
 
 
 }

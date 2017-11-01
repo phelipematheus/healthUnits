@@ -12,6 +12,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -19,6 +20,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -32,8 +37,9 @@ import com.projetomobile.jpm.healthunits.R;
 import java.io.ByteArrayOutputStream;
 
 import static com.projetomobile.jpm.healthunits.telas.TelaMaps.MAP_PERMISSION_ACCESS_FINE_LOCATION;
+import static com.projetomobile.jpm.healthunits.telas.TelaMaps.PLAY_SERVICES_RESOLUTION_REQUEST;
 
-public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCallback {
+public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     public LinearLayout linearLayoutPreChat;
     public TextView txtQualLocalOcorreu;
@@ -45,6 +51,10 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
     private Marker now, localOcorrido;
     private boolean verificaLastLocation = false;
     private boolean verificaCurrentLocation = false;
+    private boolean verificaMoveCameraUmaUnicaVez = false;
+
+    private Location mLastLocation;
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +73,12 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
                 .findFragmentById(R.id.mapa_enquete);
         mapFragment.getMapAsync(this);
 
+        // Primeiramente precisamos checar a disponibilidade da play services
+        if (checkPlayServices()) {
+            // Bildando o cliente da google api
+            buildGoogleApiClient();
+        }
+
         chamaAquiOndeEstou();
         chamaOutroLocal();
         chamaBotaoOk();
@@ -78,8 +94,11 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
         } else {
             getLastLocation();
             getLocation();
+            displayLocation();
         }
-
+        if(localOcorrido != null){
+            localOcorrido.remove();
+        }
         localOcorrido = mMap.addMarker(new MarkerOptions().position(ondeEstou).title("Preciso de socorro!").draggable(true).icon(BitmapDescriptorFactory.fromResource( R.mipmap.ic_help)));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(ondeEstou));
 
@@ -128,9 +147,9 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
 
                     LatLng me = new LatLng(location.getLatitude(), location.getLongitude());
                     ondeEstou = me;
-                    if(now != null){
-                        now.remove();
-                    }
+                    //if(now != null){
+                    //    now.remove();
+                    //}
                     //Codigo para setar um marker laranja da minha localidade
                     //now = mMap.addMarker(new MarkerOptions().position(me).title("Estou Aqui!!!").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
                     if(verificaCurrentLocation == false) {
@@ -222,6 +241,83 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
             Toast.makeText(this, "Mapa não foi inicializado", Toast.LENGTH_LONG).show();
             return ;
         }
+    }
+
+    /* ******************Localização com a LocationServices API******************************** */
+
+    protected synchronized void buildGoogleApiClient() {
+        // Cria um cliente da google API
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API).build();
+    }
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil
+                .isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Toast.makeText(getApplicationContext(),
+                        "Não foi possível achar a google play services", Toast.LENGTH_LONG)
+                        .show();
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private void displayLocation() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, MAP_PERMISSION_ACCESS_FINE_LOCATION);
+            return;
+        }
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (mLastLocation != null) {
+            //Minha localização
+            double latitude = mLastLocation.getLatitude();
+            double longitude = mLastLocation.getLongitude();
+            LatLng me = new LatLng(latitude, longitude);
+            ondeEstou = me;
+            //mMap.addMarker(new MarkerOptions().position(ondeEstou).title("Oh você aqui!!!"));
+            if(verificaMoveCameraUmaUnicaVez == false) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ondeEstou, (float) 14.5));
+                verificaMoveCameraUmaUnicaVez = true;
+            }
+            Log.e("Resposta","ESTA NO IF");
+        } else {
+            Log.e("RESPOSTA","ESTÁ NO ELSE");
+        }
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkPlayServices();
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        Log.i("", "Connection failed:  "
+                + result.getErrorCode());
+    }
+    @Override
+    public void onConnected(Bundle arg0) {
+        // Once connected with google api, get the location
+        displayLocation();
+    }
+    @Override
+    public void onConnectionSuspended(int arg0) {
+        mGoogleApiClient.connect();
     }
 
 }

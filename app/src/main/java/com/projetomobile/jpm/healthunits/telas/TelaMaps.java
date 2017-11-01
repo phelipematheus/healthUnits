@@ -21,6 +21,10 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -59,10 +63,10 @@ import static com.projetomobile.jpm.healthunits.adaptadores.MyAdapterEstabelecim
 import static com.projetomobile.jpm.healthunits.adaptadores.MyAdapterEstabelecimento.tracaOrigem;
 import static com.projetomobile.jpm.healthunits.service.ControllerRetrofit.BASE_URL;
 
-public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*, ConnectionCallbacks, OnConnectionFailedListener*/ {
+public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  , GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
 
-    public static final int MAP_PERMISSION_ACCESS_FINE_LOCATION = 9999;
+
 
     private GoogleMap mMap;
     private LocationManager locationManager;
@@ -80,6 +84,14 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
     private long distancia;
     private Polyline polyline;
 
+    private Marker meuMarker;
+    private boolean jaEntrouNoLastLocation = false;
+
+    private Location mLastLocation;
+    private GoogleApiClient mGoogleApiClient;
+    public final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
+    public static final int MAP_PERMISSION_ACCESS_FINE_LOCATION = 9999;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,6 +104,12 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        // Primeiramente precisamos checar a disponibilidade da play services
+        if (checkPlayServices()) {
+            // Bildando o cliente da google api
+            buildGoogleApiClient();
+        }
 
         //Criando todos as views da tela que tem id
         autoCompletePesquisar = (AutoCompleteTextView) findViewById(R.id.pesquisarAutoComplete);
@@ -189,6 +207,7 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
             } else {
                 getLastLocation();
                 getLocation();
+                displayLocation();
             }
         mMap.setMyLocationEnabled(false);
         mMap.setBuildingsEnabled(true);
@@ -213,17 +232,15 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ) {
             Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             LatLng me = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-            tracaRotaLocalOrigem = me;
-            MarkerOptions eu = new MarkerOptions().position(me).title("Eu estava aqui quando o anrdoid me localizou pela última vez!!!").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-            if(tracaRotaLocalOrigemVerifica != null){
-                //mMap.addMarker(eu.visible(false));
-                mMap.clear();
-            }else{
-                mMap.clear();
-                mMap.addMarker(eu.visible(true));
+            if(jaEntrouNoLastLocation == false) {
+                tracaRotaLocalOrigem = me;
+                if(meuMarker != null){
+                    meuMarker.remove();
+                }
+                meuMarker = mMap.addMarker(new MarkerOptions().position(me).title("Eu estava aqui quando o anrdoid me localizou pela última vez!!!").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(me, (float) 14.5));
+                jaEntrouNoLastLocation = true;
             }
-
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(me, (float) 14.5));
 
             Call<List<Estabelecimento>> callLatLong = apiEstabelecimento.listEstabelecimentoRaio(String.valueOf(me.latitude), String.valueOf(me.longitude),"500");
             callLatLong.enqueue(new Callback<List<Estabelecimento>>() {
@@ -260,7 +277,10 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
                     tracaRotaLocalOrigem = me;
                     tracaRotaLocalOrigemVerifica = me;
                     //mMap.clear();
-                    mMap.addMarker(new MarkerOptions().position(me).title("Estou Aqui!!!").icon( BitmapDescriptorFactory.defaultMarker( BitmapDescriptorFactory.HUE_ORANGE )));
+                    if(meuMarker != null){
+                        meuMarker.remove();
+                    }
+                    meuMarker = mMap.addMarker(new MarkerOptions().position(me).title("Estou Aqui!!!").icon( BitmapDescriptorFactory.defaultMarker( BitmapDescriptorFactory.HUE_ORANGE )));
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(me, (float) 14.5));
 
                     Call<List<Estabelecimento>> callLatLong = apiEstabelecimento.listEstabelecimentoRaio(String.valueOf(me.latitude), String.valueOf(me.longitude),"500");
@@ -320,6 +340,9 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
     @Override
     protected void onStart() {
         super.onStart();
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
         Gson gson = new GsonBuilder().setLenient().create();
         Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson)).build();
@@ -358,6 +381,7 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
     @Override
     protected void onResume() {
         super.onResume();
+        checkPlayServices();
         try{
             LatLng tracaDestino = new LatLng(Double.parseDouble(String.valueOf(estabeleci.getLatitude())),Double.parseDouble(String.valueOf(estabeleci.getLongitude())));
             if(tracaOrigem != null && tracaDestino != null){
@@ -486,6 +510,75 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  /*
         else{
             polyline.setPoints(listaRota);
         }
+    }
+
+    /* ******************Localização com a LocationServices API******************************** */
+
+    protected synchronized void buildGoogleApiClient() {
+        // Cria um cliente da google API
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API).build();
+    }
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil
+                .isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Toast.makeText(getApplicationContext(),
+                        "Não foi possível achar a google play services", Toast.LENGTH_LONG)
+                        .show();
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private void displayLocation() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, MAP_PERMISSION_ACCESS_FINE_LOCATION);
+            return;
+        }
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (mLastLocation != null) {
+            //Minha localização
+            double latitude = mLastLocation.getLatitude();
+            double longitude = mLastLocation.getLongitude();
+            LatLng me = new LatLng(latitude, longitude);
+
+            tracaRotaLocalOrigem = me;
+            tracaRotaLocalOrigemVerifica = me;
+            if(meuMarker != null){
+                meuMarker.remove();
+            }
+            meuMarker = mMap.addMarker(new MarkerOptions().position(me).title("Oh você aqui!!!").icon( BitmapDescriptorFactory.defaultMarker( BitmapDescriptorFactory.HUE_ORANGE )));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(me, (float) 14.5));
+
+            Log.e("Resposta","ESTA NO IF");
+        } else {
+            Log.e("RESPOSTA","ESTÁ NO ELSE");
+        }
+    }
+
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        Log.i("", "Connection failed:  "
+                + result.getErrorCode());
+    }
+    @Override
+    public void onConnected(Bundle arg0) {
+        // Once connected with google api, get the location
+        displayLocation();
+    }
+    @Override
+    public void onConnectionSuspended(int arg0) {
+        mGoogleApiClient.connect();
     }
 
 }

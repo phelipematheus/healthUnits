@@ -56,6 +56,8 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
     private Location mLastLocation;
     private GoogleApiClient mGoogleApiClient;
 
+    public static boolean clicou = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -187,6 +189,7 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
         btnOk.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
+                clicou = true;
                 CaptureScreen();
 
             }
@@ -197,6 +200,7 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
         btnAquiOndeEstou.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
+                clicou = true;
                 CaptureScreen();
             }
         });

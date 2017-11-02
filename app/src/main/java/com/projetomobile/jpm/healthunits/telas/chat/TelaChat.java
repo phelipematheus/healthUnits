@@ -1,44 +1,49 @@
 package com.projetomobile.jpm.healthunits.telas.chat;
 
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateFormat;
-import android.util.Base64;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.projetomobile.jpm.healthunits.R;
 import com.projetomobile.jpm.healthunits.adaptadores.MyAdapterChat;
+import com.projetomobile.jpm.healthunits.dao.ConfiguracaoFirebase;
 import com.projetomobile.jpm.healthunits.valueobject.ChatMessage;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
-import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
+
+import static com.projetomobile.jpm.healthunits.telas.chat.TelaLocaisPreChat.clicou;
 
 public class TelaChat extends AppCompatActivity {
 
     private String imageB64;
+    private String temImagem;
     private static int SIGN_IN_REQUEST_CODE = 1;
-    private FirebaseListAdapter<ChatMessage> firebaseListAdapter;
     RelativeLayout activity_main;
 
     //Add Emojicon
     EmojiconEditText emojiconEditText;
-    ImageView emojiButton,submitButton,imageViewRow;
+    ImageView emojiButton,submitButton;
     EmojIconActions emojIconActions;
+
+    private List<ChatMessage> items = new ArrayList<>();
 
 
     @Override
@@ -49,8 +54,12 @@ public class TelaChat extends AppCompatActivity {
         if(getIntent().hasExtra("ImageB64")){
             Bundle extras = getIntent().getExtras();
             imageB64 = (String) extras.get("ImageB64");
-            //imageViewRow.setVisibility(View.VISIBLE);
+        }
 
+        if(clicou == true){
+            temImagem = "1";
+        }else{
+            temImagem = "2";
         }
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -69,11 +78,13 @@ public class TelaChat extends AppCompatActivity {
             public void onClick(View view) {
                 if(FirebaseAuth.getInstance().getCurrentUser().getEmail() == null) {
                     FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage(emojiconEditText.getText().toString(),
-                            FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), imageB64));
+                            FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), imageB64, temImagem));
                 }else {
                     FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage(emojiconEditText.getText().toString(),
-                            FirebaseAuth.getInstance().getCurrentUser().getEmail(), imageB64));// Base de dados do firebase recebe a mensagem e o usuário que enviou
+                            FirebaseAuth.getInstance().getCurrentUser().getEmail(), imageB64, temImagem));// Base de dados do firebase recebe a mensagem e o usuário que enviou
                 }
+                clicou = false;
+                imageB64 = null;
                 emojiconEditText.setText("");// Zero o campo mensagem
                 emojiconEditText.requestFocus();// Volto o cursor para o campo de mensagem
             }
@@ -103,41 +114,28 @@ public class TelaChat extends AppCompatActivity {
         listOfMessage.setHasFixedSize(true);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
-        listOfMessage.setLayoutManager(mLayoutManager);
 
-        firebaseListAdapter = new FirebaseListAdapter<ChatMessage>(this,ChatMessage.class,R.layout.row_chat, FirebaseDatabase.getInstance().getReference())
-        {
-            @Override
-            protected void populateView(View v, ChatMessage model, int position) {
 
-                //Get references to the views of row_chat.xml
-                TextView messageText, messageUser, messageTime;
-                ImageView messageBitmap;
-                messageText = (EmojiconTextView) v.findViewById(R.id.message_text);
-                messageUser = (TextView) v.findViewById(R.id.message_user);
-                messageTime = (TextView) v.findViewById(R.id.message_time);
-                messageBitmap = (ImageView) v.findViewById(R.id.message_bitmap);
-
-                messageText.setText(model.getMessageText());
-                messageUser.setText(model.getMessageUser());
-                messageTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)", model.getMessageTime()));
-                try {//converte o dado string do firebase para bitmap para conseguir usar o setImageBitmap()
-                    if(model.getMessageBitmap() != null){
-                        byte [] encodeByte= Base64.decode(model.getMessageBitmap(),Base64.DEFAULT);
-                        Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-                        messageBitmap.setImageBitmap(bitmap);
-                    }else{
-                        messageBitmap.setImageBitmap(null);
-                        messageBitmap.setVisibility(View.GONE);
-                    }
-
-                } catch(Exception e) {
-                    e.getMessage();
+        DatabaseReference ref = ConfiguracaoFirebase.getFirebase();
+        ref.addValueEventListener(new ValueEventListener() {
+            public void onDataChange(DataSnapshot snapshot) {
+                items.clear();
+                for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+                    ChatMessage chatMessage = postSnapshot.getValue(ChatMessage.class);
+                    items.add(chatMessage);
                 }
 
             }
-        };
-        adapter = new MyAdapterChat(firebaseListAdapter);
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(TelaChat.this,"Não foi possivel conectar a base de dados! ",Toast.LENGTH_LONG).show();
+            }
+
+
+        });
+
+        adapter = new MyAdapterChat(items);
         listOfMessage.setAdapter(adapter);
     }
 }

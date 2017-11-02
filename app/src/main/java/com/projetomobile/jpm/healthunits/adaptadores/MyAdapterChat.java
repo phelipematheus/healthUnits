@@ -12,16 +12,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.firebase.ui.database.FirebaseListAdapter;
 import com.projetomobile.jpm.healthunits.R;
 import com.projetomobile.jpm.healthunits.valueobject.ChatMessage;
+
+import java.util.List;
 
 import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
 
 
 public class MyAdapterChat extends RecyclerView.Adapter<MyAdapterChat.ViewHolder>{
-    private FirebaseListAdapter<ChatMessage> values;
 
+    private List<ChatMessage> values;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -39,7 +40,7 @@ public class MyAdapterChat extends RecyclerView.Adapter<MyAdapterChat.ViewHolder
         }
     }
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapterChat(FirebaseListAdapter<ChatMessage> myDataset) {
+    public MyAdapterChat(List<ChatMessage> myDataset) {
         values = myDataset;
     }
 
@@ -58,30 +59,32 @@ public class MyAdapterChat extends RecyclerView.Adapter<MyAdapterChat.ViewHolder
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
 
-        final ChatMessage chatMessage = values.getItem(position);
+        final ChatMessage chatMessage = values.get(position);
         //get(position);
+        int num = Integer.parseInt(chatMessage.getTemImagem());
         holder.messageText.setText(chatMessage.getMessageText());
         holder.messageUser.setText(chatMessage.getMessageUser());
         holder.messageTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)", chatMessage.getMessageTime()));
         try {//converte o dado string para bitmap
-            if(chatMessage.getMessageBitmap() != null){
+            if(num==1){
                 byte [] encodeByte= Base64.decode(chatMessage.getMessageBitmap(),Base64.DEFAULT);
                 Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+                holder.messageBitmap.setVisibility(View.VISIBLE);
                 holder.messageBitmap.setImageBitmap(bitmap);
-            }else{
-
+            }else if(num==2){
+                holder.messageBitmap.setImageBitmap(null);
+                holder.messageBitmap.setVisibility(View.GONE);
             }
 
         } catch(Exception e) {
             e.getMessage();
         }
 
+
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return values.getCount();
-
+        return values.size();
     }
 }

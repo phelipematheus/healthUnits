@@ -8,15 +8,25 @@ public class ChatMessage {
     private String messageUser;
     private long messageTime;
     private String messageBitmap;
+    private String temImagem;
 
-    public ChatMessage(String messageText, String messageUser, String messageBitmap) {
+    public ChatMessage(String messageText, String messageUser, String messageBitmap, String temImagem) {
         this.messageText = messageText;
         this.messageUser = messageUser;
         this.messageTime = new Date().getTime();
         this.messageBitmap = messageBitmap;
+        this.temImagem = temImagem;
     }
 
     public ChatMessage() {
+    }
+
+    public String getTemImagem() {
+        return temImagem;
+    }
+
+    public void setTemImagem(String temImagem) {
+        this.temImagem = temImagem;
     }
 
     public String getMessageBitmap() {

@@ -581,4 +581,8 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  , 
         mGoogleApiClient.connect();
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }

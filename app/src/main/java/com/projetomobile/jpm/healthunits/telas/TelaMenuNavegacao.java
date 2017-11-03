@@ -88,6 +88,8 @@ public class TelaMenuNavegacao extends AppCompatActivity{
                 autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
                 autenticacao.signOut();
                 LoginManager.getInstance().logOut();
+                Intent callTelaLogin = new Intent(TelaMenuNavegacao.this,TelaLogin.class);
+                startActivity(callTelaLogin);
                 finish();
             }
         });

@@ -300,5 +300,8 @@ public class TelaListaEstabelecimento extends AppCompatActivity implements OnMap
         mGoogleApiClient.connect();
     }
 
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }

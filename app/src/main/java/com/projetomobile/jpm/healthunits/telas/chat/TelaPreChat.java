@@ -37,6 +37,7 @@ public class TelaPreChat extends AppCompatActivity {
             public void onClick(View view) {
                 Intent callTelaPreChat = new Intent(TelaPreChat.this,TelaLocaisPreChat.class);
                 startActivity(callTelaPreChat);
+                finish();
             }
         });
     }
@@ -47,6 +48,7 @@ public class TelaPreChat extends AppCompatActivity {
             public void onClick(View view) {
                 Intent callTelaPreChat = new Intent(TelaPreChat.this,TelaLocaisPreChat.class);
                 startActivity(callTelaPreChat);
+                finish();
             }
         });
     }
@@ -57,6 +59,7 @@ public class TelaPreChat extends AppCompatActivity {
             public void onClick(View view) {
                 Intent callTelaPreChat = new Intent(TelaPreChat.this,TelaLocaisPreChat.class);
                 startActivity(callTelaPreChat);
+                finish();
             }
         });
     }
@@ -67,9 +70,13 @@ public class TelaPreChat extends AppCompatActivity {
             public void onClick(View view) {
                 Intent callTelaPreChat = new Intent(TelaPreChat.this,TelaLocaisPreChat.class);
                 startActivity(callTelaPreChat);
+                finish();
             }
         });
     }
 
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }

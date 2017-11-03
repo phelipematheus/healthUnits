@@ -59,6 +59,8 @@ public class TelaLogin extends AppCompatActivity implements View.OnClickListener
     private Button btnEntrar;
     private TextView txtCadastro,txtEsqueciSenha;
 
+    private boolean validaFacebook = false;
+
     private SignInButton signIn;
     private GoogleApiClient mGoogleApiClient;
     private static final int RC_SIGN_IN = 9001;
@@ -127,7 +129,14 @@ public class TelaLogin extends AppCompatActivity implements View.OnClickListener
                 ProfileTracker profileTracker = new ProfileTracker() {
                     @Override
                     protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
-                        Toast.makeText(TelaLogin.this,"Bem-Vindo "+currentProfile.getName()+"!",Toast.LENGTH_LONG).show();
+                        try{
+                            if(currentProfile.getName() != null && validaFacebook == false){
+                                Toast.makeText(TelaLogin.this,"Bem-Vindo "+ currentProfile.getName()+"!",Toast.LENGTH_LONG).show();
+                                validaFacebook = true;
+                            }
+                        }catch (Exception ex){
+
+                        }
                         //autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
                         //chatMessage.setMessageUser(currentProfile.getName());
                     }
@@ -164,6 +173,7 @@ public class TelaLogin extends AppCompatActivity implements View.OnClickListener
         if(user != null){
             Intent telaMenu = new Intent(this,TelaMenuNavegacao.class);
             startActivity(telaMenu);
+            finish();
         }
     }
 

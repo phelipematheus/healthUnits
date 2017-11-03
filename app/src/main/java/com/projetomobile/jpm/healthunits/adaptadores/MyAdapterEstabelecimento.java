@@ -4,9 +4,9 @@ package com.projetomobile.jpm.healthunits.adaptadores;
  * Created by JV on 06/09/2017.
  */
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.location.LocationManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +30,6 @@ public class MyAdapterEstabelecimento extends RecyclerView.Adapter<MyAdapterEsta
     public static Estabelecimento estabeleci;
     public static LatLng tracaOrigem;
     public static boolean verificaSePodeFinalizarActivity = false;
-    private LocationManager locationManager;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -98,6 +97,7 @@ public class MyAdapterEstabelecimento extends RecyclerView.Adapter<MyAdapterEsta
                 estabeleci = values.get(position);
                 verificaSePodeFinalizarActivity = true;
                 contextListaEstabelecimento.startActivity(abreMapaComRota);
+                ((Activity) contextListaEstabelecimento).finish();
 
             }
 

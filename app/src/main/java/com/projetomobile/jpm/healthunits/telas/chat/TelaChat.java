@@ -115,6 +115,7 @@ public class TelaChat extends AppCompatActivity {
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
 
+        listOfMessage.setLayoutManager(mLayoutManager);
 
         DatabaseReference ref = ConfiguracaoFirebase.getFirebase();
         ref.addValueEventListener(new ValueEventListener() {
@@ -137,5 +138,10 @@ public class TelaChat extends AppCompatActivity {
 
         adapter = new MyAdapterChat(items);
         listOfMessage.setAdapter(adapter);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

@@ -98,11 +98,7 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
             getLocation();
             displayLocation();
         }
-        if(localOcorrido != null){
-            localOcorrido.remove();
-        }
-        localOcorrido = mMap.addMarker(new MarkerOptions().position(ondeEstou).title("Preciso de socorro!").draggable(true).icon(BitmapDescriptorFactory.fromResource( R.mipmap.ic_help)));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(ondeEstou));
+
 
         mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
 
@@ -114,7 +110,7 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
             public void onMarkerDragEnd(Marker marker) {
                 localOcorrido = marker;
                 marker.setSnippet("Local do ocorrido");
-                mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), (float) 14.5));
 
             }
 
@@ -136,7 +132,11 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
                 //Codigo para setar um marker laranja da minha localidade
                 //MarkerOptions eu = new MarkerOptions().position(me).title("Eu estava aqui quando o anrdoid me localizou pela última vez!!!").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
                 //now = mMap.addMarker(eu);
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, (float) 14.5));
+                if(localOcorrido != null){
+                    localOcorrido.remove();
+                }
+                localOcorrido = mMap.addMarker(new MarkerOptions().position(ondeEstou).title("Preciso de socorro!").draggable(true).icon(BitmapDescriptorFactory.fromResource( R.mipmap.ic_help)));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ondeEstou, (float) 14.5));
                 verificaLastLocation = true;
             }
         }
@@ -155,7 +155,11 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
                     //Codigo para setar um marker laranja da minha localidade
                     //now = mMap.addMarker(new MarkerOptions().position(me).title("Estou Aqui!!!").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
                     if(verificaCurrentLocation == false) {
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(me, (float) 14.5));
+                        if(localOcorrido != null){
+                            localOcorrido.remove();
+                        }
+                        localOcorrido = mMap.addMarker(new MarkerOptions().position(ondeEstou).title("Preciso de socorro!").draggable(true).icon(BitmapDescriptorFactory.fromResource( R.mipmap.ic_help)));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ondeEstou, (float) 14.5));
                         verificaCurrentLocation = true;
                     }
 
@@ -207,43 +211,46 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
     }
 
     private void CaptureScreen() {
-        if(mMap != null){
-            if(localOcorrido.getPosition() != null){
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(localOcorrido.getPosition(), (float) 14.5));
-            }else{
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ondeEstou, (float) 14.5));
-            }
-
-            GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
-                @Override
-                public void onSnapshotReady(Bitmap snapshot) {
-                    // TODO Auto-generated method stub
-                    try {
-                        Intent calltelaChat = new Intent(TelaLocaisPreChat.this,TelaChat.class);
-
-                        Bitmap resizedBitmap = Bitmap.createBitmap(snapshot, 0, 400, snapshot.getWidth(), 600);
-
-                        ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                        resizedBitmap.compress(Bitmap.CompressFormat.PNG, 100, bao);
-                        resizedBitmap.recycle();
-                        byte[] byteArray = bao.toByteArray();
-                        String imageB64 = Base64.encodeToString(byteArray, Base64.DEFAULT);
-
-                        calltelaChat.putExtra("ImageB64", imageB64);
-
-                        Toast.makeText(TelaLocaisPreChat.this, "Local capturado com sucesso!", Toast.LENGTH_LONG).show();
-
-                        startActivity(calltelaChat);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+        try{
+            if (mMap != null) {
+                if (localOcorrido.getPosition() != null) {
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(localOcorrido.getPosition(), (float) 14.5));
+                } else {
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ondeEstou, (float) 14.5));
                 }
-            };
-            mMap.snapshot(callback);
-        }
-        else{
+
+                GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
+                    @Override
+                    public void onSnapshotReady(Bitmap snapshot) {
+                        // TODO Auto-generated method stub
+                        try {
+                            Intent calltelaChat = new Intent(TelaLocaisPreChat.this, TelaChat.class);
+
+                            Bitmap resizedBitmap = Bitmap.createBitmap(snapshot, 0, 400, snapshot.getWidth(), 600);
+
+                            ByteArrayOutputStream bao = new ByteArrayOutputStream();
+                            resizedBitmap.compress(Bitmap.CompressFormat.PNG, 100, bao);
+                            resizedBitmap.recycle();
+                            byte[] byteArray = bao.toByteArray();
+                            String imageB64 = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+                            calltelaChat.putExtra("ImageB64", imageB64);
+
+                            Toast.makeText(TelaLocaisPreChat.this, "Local capturado com sucesso!", Toast.LENGTH_LONG).show();
+
+                            startActivity(calltelaChat);
+                            finish();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                mMap.snapshot(callback);
+            } else {
+                Toast.makeText(this, "Mapa não foi inicializado", Toast.LENGTH_LONG).show();
+            }
+        }catch(Exception ex) {
             Toast.makeText(this, "Mapa não foi inicializado", Toast.LENGTH_LONG).show();
-            return ;
         }
     }
 
@@ -288,6 +295,10 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
             ondeEstou = me;
             //mMap.addMarker(new MarkerOptions().position(ondeEstou).title("Oh você aqui!!!"));
             if(verificaMoveCameraUmaUnicaVez == false) {
+                if(localOcorrido != null){
+                    localOcorrido.remove();
+                }
+                localOcorrido = mMap.addMarker(new MarkerOptions().position(ondeEstou).title("Preciso de socorro!").draggable(true).icon(BitmapDescriptorFactory.fromResource( R.mipmap.ic_help)));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ondeEstou, (float) 14.5));
                 verificaMoveCameraUmaUnicaVez = true;
             }

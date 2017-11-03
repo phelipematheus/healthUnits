@@ -1,6 +1,9 @@
 package com.projetomobile.jpm.healthunits.telas.chat;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -33,8 +36,7 @@ import static com.projetomobile.jpm.healthunits.telas.chat.TelaLocaisPreChat.cli
 
 public class TelaChat extends AppCompatActivity {
 
-    private String imageB64;
-    private String temImagem;
+    private String temImagem, tipoAcidente, imageB64;
     private static int SIGN_IN_REQUEST_CODE = 1;
     RelativeLayout activity_main;
 
@@ -45,11 +47,15 @@ public class TelaChat extends AppCompatActivity {
 
     private List<ChatMessage> items = new ArrayList<>();
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tela_chat);
+
+        if(getIntent().hasExtra("TipoAcidente")){
+            Bundle extras = getIntent().getExtras();
+            tipoAcidente = (String) extras.get("TipoAcidente");
+        }
 
         if(getIntent().hasExtra("ImageB64")){
             Bundle extras = getIntent().getExtras();
@@ -57,6 +63,49 @@ public class TelaChat extends AppCompatActivity {
         }
 
         if(clicou == true){
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Compartilhar?");
+            builder.setMessage("Deseja compartihar o local do acidente?");
+            builder.setPositiveButton("SIM", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface arg0, int arg1) {
+                    if(FirebaseAuth.getInstance().getCurrentUser().getEmail() == null) {
+                        FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage("Socorro! "+tipoAcidente+"!",
+                                FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), imageB64, temImagem));
+                    }else {
+                        FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage("Socorro! "+tipoAcidente+"!",
+                                FirebaseAuth.getInstance().getCurrentUser().getEmail(), imageB64, temImagem));// Base de dados do firebase recebe a mensagem e o usuário que enviou
+                    }
+                    clicou = false;
+                    imageB64 = null;
+                }
+            });
+            builder.setNegativeButton("NÃO", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface arg0, int arg1) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(TelaChat.this);
+                    builder.setTitle("Mudar local?");
+                    builder.setMessage("Deseja mudar o local do acidente sair?");
+                    builder.setPositiveButton("SIM", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface arg0, int arg1) {
+                            clicou = false;
+                            imageB64 = null;
+                            Intent telaLocaisPreChat = new Intent(TelaChat.this,TelaLocaisPreChat.class);
+                            startActivity(telaLocaisPreChat);
+                            finish();
+                        }
+                    });
+                    builder.setNegativeButton("NÃO", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface arg0, int arg1) {
+                            clicou = false;
+                            imageB64 = null;
+                        }
+                    });
+                    AlertDialog alerta = builder.create();
+                    alerta.show();
+                }
+            });
+            AlertDialog alerta = builder.create();
+            alerta.show();
+
             temImagem = "1";
         }else{
             temImagem = "2";
@@ -76,17 +125,21 @@ public class TelaChat extends AppCompatActivity {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(FirebaseAuth.getInstance().getCurrentUser().getEmail() == null) {
-                    FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage(emojiconEditText.getText().toString(),
-                            FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), imageB64, temImagem));
+                if(emojiconEditText.getText().toString() != null && emojiconEditText.getText().toString().equals("") == false) {
+                    if (FirebaseAuth.getInstance().getCurrentUser().getEmail() == null) {
+                        FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage(emojiconEditText.getText().toString(),
+                                FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), null, "2"));
+                    } else {
+                        FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage(emojiconEditText.getText().toString(),
+                                FirebaseAuth.getInstance().getCurrentUser().getEmail(), null, "2"));// Base de dados do firebase recebe a mensagem e o usuário que enviou
+                    }
+                    clicou = false;
+                    imageB64 = null;
+                    emojiconEditText.setText("");// Zero o campo mensagem
+                    emojiconEditText.requestFocus();// Volto o cursor para o campo de mensagem
                 }else {
-                    FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage(emojiconEditText.getText().toString(),
-                            FirebaseAuth.getInstance().getCurrentUser().getEmail(), imageB64, temImagem));// Base de dados do firebase recebe a mensagem e o usuário que enviou
+                    Toast.makeText(TelaChat.this,"Digite alguma coisa...",Toast.LENGTH_LONG).show();
                 }
-                clicou = false;
-                imageB64 = null;
-                emojiconEditText.setText("");// Zero o campo mensagem
-                emojiconEditText.requestFocus();// Volto o cursor para o campo de mensagem
             }
         });
 

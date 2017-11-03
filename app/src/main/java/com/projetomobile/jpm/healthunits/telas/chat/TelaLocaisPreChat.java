@@ -58,12 +58,19 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
 
     public static boolean clicou = false;
 
+    private String tipoAcidente;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tela_locais_pre_chat);
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        if(getIntent().hasExtra("TipoAcidente")){
+            Bundle extras = getIntent().getExtras();
+            tipoAcidente = (String) extras.get("TipoAcidente");
+        }
 
         btnOk = (Button) findViewById(R.id.btn_ok);
         linearLayoutPreChat = (LinearLayout) findViewById(R.id.linear_layout_locais_chat);
@@ -235,6 +242,7 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
                             String imageB64 = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
                             calltelaChat.putExtra("ImageB64", imageB64);
+                            calltelaChat.putExtra("TipoAcidente", tipoAcidente);
 
                             Toast.makeText(TelaLocaisPreChat.this, "Local capturado com sucesso!", Toast.LENGTH_LONG).show();
 

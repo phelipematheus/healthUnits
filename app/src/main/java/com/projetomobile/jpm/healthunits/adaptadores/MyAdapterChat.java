@@ -3,6 +3,7 @@ package com.projetomobile.jpm.healthunits.adaptadores;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.util.Base64;
@@ -71,9 +72,14 @@ public class MyAdapterChat extends RecyclerView.Adapter<MyAdapterChat.ViewHolder
                 Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
                 holder.messageBitmap.setVisibility(View.VISIBLE);
                 holder.messageBitmap.setImageBitmap(bitmap);
+
+                holder.messageText.setTextColor(Color.RED);
+
             }else if(num==2){
                 holder.messageBitmap.setImageBitmap(null);
                 holder.messageBitmap.setVisibility(View.GONE);
+
+                holder.messageText.setTextColor(Color.BLACK);
             }
 
         } catch(Exception e) {

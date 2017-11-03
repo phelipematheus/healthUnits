@@ -11,7 +11,7 @@ import com.projetomobile.jpm.healthunits.R;
 
 public class TelaPreChat extends AppCompatActivity {
 
-    public Button btnAtropelamento, btnInfarte, btnConvulsao, btnPessoaBaleada;
+    private Button btnAtropelamento, btnInfarte, btnConvulsao, btnPessoaBaleada;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +36,7 @@ public class TelaPreChat extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent callTelaPreChat = new Intent(TelaPreChat.this,TelaLocaisPreChat.class);
+                callTelaPreChat.putExtra("TipoAcidente", "Atropelamento");
                 startActivity(callTelaPreChat);
                 finish();
             }
@@ -47,6 +48,7 @@ public class TelaPreChat extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent callTelaPreChat = new Intent(TelaPreChat.this,TelaLocaisPreChat.class);
+                callTelaPreChat.putExtra("TipoAcidente", "Infarte");
                 startActivity(callTelaPreChat);
                 finish();
             }
@@ -58,6 +60,7 @@ public class TelaPreChat extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent callTelaPreChat = new Intent(TelaPreChat.this,TelaLocaisPreChat.class);
+                callTelaPreChat.putExtra("TipoAcidente", "Convulsão");
                 startActivity(callTelaPreChat);
                 finish();
             }
@@ -69,11 +72,14 @@ public class TelaPreChat extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent callTelaPreChat = new Intent(TelaPreChat.this,TelaLocaisPreChat.class);
+                callTelaPreChat.putExtra("TipoAcidente", "Pessoa Baleada");
                 startActivity(callTelaPreChat);
                 finish();
             }
         });
     }
+
+
 
     @Override
     public void onBackPressed() {

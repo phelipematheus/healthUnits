@@ -2,19 +2,34 @@ package com.projetomobile.jpm.healthunits.telas.chat;
 
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -32,13 +47,20 @@ import java.util.List;
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 
+import static com.projetomobile.jpm.healthunits.telas.TelaMaps.MAP_PERMISSION_ACCESS_FINE_LOCATION;
+import static com.projetomobile.jpm.healthunits.telas.TelaMaps.PLAY_SERVICES_RESOLUTION_REQUEST;
 import static com.projetomobile.jpm.healthunits.telas.chat.TelaLocaisPreChat.clicou;
 
-public class TelaChat extends AppCompatActivity {
+public class TelaChat extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
-    private String temImagem, tipoAcidente, imageB64;
+    private String temImagem, tipoAcidente, imageB64, descricao;
     private static int SIGN_IN_REQUEST_CODE = 1;
-    RelativeLayout activity_main;
+    private RelativeLayout activity_main;
+    private LatLng localOcorrido, origem;
+
+    private Location mLastLocation;
+    private GoogleApiClient mGoogleApiClient;
+    private LocationManager locationManager;
 
     //Add Emojicon
     EmojiconEditText emojiconEditText;
@@ -57,9 +79,24 @@ public class TelaChat extends AppCompatActivity {
             tipoAcidente = (String) extras.get("TipoAcidente");
         }
 
+        if(getIntent().hasExtra("Descricao")){
+            Bundle extras = getIntent().getExtras();
+            descricao = (String) extras.get("Descricao");
+        }
+
         if(getIntent().hasExtra("ImageB64")){
             Bundle extras = getIntent().getExtras();
             imageB64 = (String) extras.get("ImageB64");
+        }
+
+        if(getIntent().hasExtra("LocalOcorrido")){
+            Bundle extras = getIntent().getExtras();
+            localOcorrido = (LatLng) extras.get("LocalOcorrido");
+        }
+
+        if (checkPlayServices()) {
+            // Bildando o cliente da google api
+            buildGoogleApiClient();
         }
 
         if(clicou == true){
@@ -69,11 +106,11 @@ public class TelaChat extends AppCompatActivity {
             builder.setPositiveButton("SIM", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface arg0, int arg1) {
                     if(FirebaseAuth.getInstance().getCurrentUser().getEmail() == null) {
-                        FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage("Socorro! "+tipoAcidente+"!",
-                                FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), imageB64, temImagem));
+                        FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage("Preciso de socorro! "+descricao+"!",
+                                FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), imageB64, temImagem, localOcorrido));
                     }else {
-                        FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage("Socorro! "+tipoAcidente+"!",
-                                FirebaseAuth.getInstance().getCurrentUser().getEmail(), imageB64, temImagem));// Base de dados do firebase recebe a mensagem e o usuário que enviou
+                        FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage("Preciso de socorro! "+descricao+"!",
+                                FirebaseAuth.getInstance().getCurrentUser().getEmail(), imageB64, temImagem, localOcorrido));// Base de dados do firebase recebe a mensagem e o usuário que enviou
                     }
                     clicou = false;
                     imageB64 = null;
@@ -128,10 +165,10 @@ public class TelaChat extends AppCompatActivity {
                 if(emojiconEditText.getText().toString() != null && emojiconEditText.getText().toString().equals("") == false) {
                     if (FirebaseAuth.getInstance().getCurrentUser().getEmail() == null) {
                         FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage(emojiconEditText.getText().toString(),
-                                FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), null, "2"));
+                                FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), null, "2",null));
                     } else {
                         FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage(emojiconEditText.getText().toString(),
-                                FirebaseAuth.getInstance().getCurrentUser().getEmail(), null, "2"));// Base de dados do firebase recebe a mensagem e o usuário que enviou
+                                FirebaseAuth.getInstance().getCurrentUser().getEmail(), null, "2", null));// Base de dados do firebase recebe a mensagem e o usuário que enviou
                     }
                     clicou = false;
                     imageB64 = null;
@@ -188,13 +225,147 @@ public class TelaChat extends AppCompatActivity {
 
 
         });
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
-        adapter = new MyAdapterChat(items);
-        listOfMessage.setAdapter(adapter);
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, MAP_PERMISSION_ACCESS_FINE_LOCATION);
+        } else {
+            getLastLocation();
+            getLocation();
+            displayLocation();
+        }
+        //if(origem != null && mLastLocation != null) {
+            adapter = new MyAdapterChat(TelaChat.this, items, origem);
+            listOfMessage.setAdapter(adapter);
+        //}
+    }
+
+
+    //================MAPS====================================================================
+
+
+    public void getLastLocation() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ) {
+            Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            LatLng me = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+            origem = me;
+        }
+    }
+
+    public void getLocation() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ) {
+            LocationListener locationListener = new LocationListener() {
+                public void onLocationChanged(Location location) {
+                    LatLng me = new LatLng(location.getLatitude(), location.getLongitude());
+                    origem = me;
+
+                }
+
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+                }
+
+                public void onProviderEnabled(String provider) {
+                }
+
+                public void onProviderDisabled(String provider) {
+                }
+            };
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 40000, 0, locationListener);
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        //mMap = googleMap;
+
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, MAP_PERMISSION_ACCESS_FINE_LOCATION);
+        } else {
+            getLastLocation();
+            getLocation();
+            displayLocation();
+
+        }
+        //mMap.setMyLocationEnabled(true);
+    }
+
+    /* ******************Localização com a LocationServices API******************************** */
+
+    protected synchronized void buildGoogleApiClient() {
+        // Cria um cliente da google API
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API).build();
+    }
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil
+                .isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Toast.makeText(getApplicationContext(),
+                        "Não foi possível achar a google play services", Toast.LENGTH_LONG)
+                        .show();
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private void displayLocation() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, MAP_PERMISSION_ACCESS_FINE_LOCATION);
+            return;
+        }
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (mLastLocation != null) {
+            //Minha localização
+            double latitude = mLastLocation.getLatitude();
+            double longitude = mLastLocation.getLongitude();
+            LatLng me = new LatLng(latitude, longitude);
+            origem = me;
+            Log.e("Resposta","ESTA NO IF");
+        } else {
+            Log.e("RESPOSTA","ESTÁ NO ELSE");
+        }
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkPlayServices();
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        Log.i("", "Connection failed:  "
+                + result.getErrorCode());
+    }
+    @Override
+    public void onConnected(Bundle arg0) {
+        // Once connected with google api, get the location
+        displayLocation();
+    }
+    @Override
+    public void onConnectionSuspended(int arg0) {
+        mGoogleApiClient.connect();
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
     }
+
 }

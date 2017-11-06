@@ -87,6 +87,9 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  , 
     private Marker meuMarker;
     private boolean jaEntrouNoLastLocation = false;
 
+    private LatLng minhaLocalizacao;
+    private String latitudeDestino, longitudeDestino;
+
     private Location mLastLocation;
     private GoogleApiClient mGoogleApiClient;
     public final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
@@ -383,6 +386,25 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  , 
         super.onResume();
         checkPlayServices();
         try{
+
+            if(getIntent().hasExtra("MinhaLocalizacao")){
+                Bundle extras = getIntent().getExtras();
+                minhaLocalizacao = (LatLng) extras.get("MinhaLocalizacao");
+            }
+            if(getIntent().hasExtra("LatitudeDestino")){
+                Bundle extras = getIntent().getExtras();
+                latitudeDestino = (String) extras.get("LatitudeDestino");
+            }
+            if(getIntent().hasExtra("LongitudeDestino")){
+                Bundle extras = getIntent().getExtras();
+                longitudeDestino = (String) extras.get("LongitudeDestino");
+            }
+
+            if(minhaLocalizacao != null && latitudeDestino != null && longitudeDestino != null){
+                LatLng tracaDestino = new LatLng(Double.parseDouble(latitudeDestino),Double.parseDouble(longitudeDestino));
+                getRoute(minhaLocalizacao,tracaDestino);
+            }
+
             LatLng tracaDestino = new LatLng(Double.parseDouble(String.valueOf(estabeleci.getLatitude())),Double.parseDouble(String.valueOf(estabeleci.getLongitude())));
             if(tracaOrigem != null && tracaDestino != null){
                 getRoute(tracaOrigem,tracaDestino);

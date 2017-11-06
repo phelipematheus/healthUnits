@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.projetomobile.jpm.healthunits.telas.chat.TelaDescricaoPreChat">
+
+
+    <EditText
+        android:id="@+id/edt_descricao"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:gravity="top"
+        android:layout_margin="10dp"
+        android:padding="10dp"
+        android:hint="Escreva uma breve descrição do que aconteceu..."
+        android:background="@drawable/rounded_edittext"
+        android:lines="6" />
+
+    <Button
+        android:id="@+id/btn_continuar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Continuar"
+        android:textColor="#FFFFFF"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        app:backgroundTint="#00a6ff"/>
+</LinearLayout>

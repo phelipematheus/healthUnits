@@ -65,8 +65,8 @@ public class TelaMenuNavegacao extends AppCompatActivity{
         btnPrecisoDeSocorro.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Intent callTelaPreChat = new Intent(TelaMenuNavegacao.this,TelaPreChat.class);
-                startActivity(callTelaPreChat);
+                Intent callTelaDescricaoPreChat = new Intent(TelaMenuNavegacao.this,TelaPreChat.class);
+                startActivity(callTelaDescricaoPreChat);
             }
         });
     }

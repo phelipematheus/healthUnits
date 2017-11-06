@@ -35,9 +35,9 @@ public class TelaPreChat extends AppCompatActivity {
         btnAtropelamento.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Intent callTelaPreChat = new Intent(TelaPreChat.this,TelaLocaisPreChat.class);
-                callTelaPreChat.putExtra("TipoAcidente", "Atropelamento");
-                startActivity(callTelaPreChat);
+                Intent callTelaDescricaoPreChat = new Intent(TelaPreChat.this,TelaDescricaoPreChat.class);
+                callTelaDescricaoPreChat.putExtra("TipoAcidente", "Atropelamento");
+                startActivity(callTelaDescricaoPreChat);
                 finish();
             }
         });
@@ -47,9 +47,9 @@ public class TelaPreChat extends AppCompatActivity {
         btnInfarte.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Intent callTelaPreChat = new Intent(TelaPreChat.this,TelaLocaisPreChat.class);
-                callTelaPreChat.putExtra("TipoAcidente", "Infarte");
-                startActivity(callTelaPreChat);
+                Intent callTelaDescricaoPreChat = new Intent(TelaPreChat.this,TelaDescricaoPreChat.class);
+                callTelaDescricaoPreChat.putExtra("TipoAcidente", "Infarte");
+                startActivity(callTelaDescricaoPreChat);
                 finish();
             }
         });
@@ -59,9 +59,9 @@ public class TelaPreChat extends AppCompatActivity {
         btnConvulsao.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Intent callTelaPreChat = new Intent(TelaPreChat.this,TelaLocaisPreChat.class);
-                callTelaPreChat.putExtra("TipoAcidente", "Convulsão");
-                startActivity(callTelaPreChat);
+                Intent callTelaDescricaoPreChat = new Intent(TelaPreChat.this,TelaDescricaoPreChat.class);
+                callTelaDescricaoPreChat.putExtra("TipoAcidente", "Convulsão");
+                startActivity(callTelaDescricaoPreChat);
                 finish();
             }
         });
@@ -71,9 +71,9 @@ public class TelaPreChat extends AppCompatActivity {
         btnPessoaBaleada.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Intent callTelaPreChat = new Intent(TelaPreChat.this,TelaLocaisPreChat.class);
-                callTelaPreChat.putExtra("TipoAcidente", "Pessoa Baleada");
-                startActivity(callTelaPreChat);
+                Intent callTelaDescricaoPreChat = new Intent(TelaPreChat.this,TelaDescricaoPreChat.class);
+                callTelaDescricaoPreChat.putExtra("TipoAcidente", "Pessoa Baleada");
+                startActivity(callTelaDescricaoPreChat);
                 finish();
             }
         });

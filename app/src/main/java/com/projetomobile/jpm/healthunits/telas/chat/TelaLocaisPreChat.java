@@ -4,15 +4,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -32,6 +36,11 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.projetomobile.jpm.healthunits.R;
 
 import java.io.ByteArrayOutputStream;
@@ -52,13 +61,21 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
     private boolean verificaLastLocation = false;
     private boolean verificaCurrentLocation = false;
     private boolean verificaMoveCameraUmaUnicaVez = false;
+    private TextView txtMoverMarker;
 
     private Location mLastLocation;
     private GoogleApiClient mGoogleApiClient;
 
-    public static boolean clicou = false;
+    private StorageReference mStorage;
 
-    private String tipoAcidente;
+    public static boolean clicou = false;
+    private boolean jaPegouLocalizacao = false;
+
+    private String tipoAcidente, descricao;
+
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
+    private StorageReference mountainsRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,16 +84,27 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReferenceFromUrl("gs://health-units.appspot.com/");
+        //mountainsRef = storageRef.child("mountains.jpg");
+
+        if(getIntent().hasExtra("Descricao")){
+            Bundle extras = getIntent().getExtras();
+            descricao = (String) extras.get("Descricao");
+        }
+
         if(getIntent().hasExtra("TipoAcidente")){
             Bundle extras = getIntent().getExtras();
             tipoAcidente = (String) extras.get("TipoAcidente");
         }
+
 
         btnOk = (Button) findViewById(R.id.btn_ok);
         linearLayoutPreChat = (LinearLayout) findViewById(R.id.linear_layout_locais_chat);
         txtQualLocalOcorreu = (TextView) findViewById(R.id.txt_qual_local_ocorreu);
         btnAquiOndeEstou = (Button) findViewById(R.id.btn_aqui_onde_estou);
         btnOutroLocal = (Button) findViewById(R.id.btn_outro_local);
+        txtMoverMarker = (TextView) findViewById(R.id.txt_mover_marker);
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapa_enquete);
@@ -96,14 +124,51 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+            @Override
+            public View getInfoWindow(Marker arg0) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+
+                Context context = getApplicationContext(); //or getActivity(), YourActivity.this, etc.
+
+                LinearLayout info = new LinearLayout(context);
+                info.setOrientation(LinearLayout.VERTICAL);
+
+                TextView title = new TextView(context);
+                title.setTextColor(Color.BLACK);
+                title.setGravity(Gravity.CENTER);
+                title.setTypeface(null, Typeface.BOLD);
+                title.setText(marker.getTitle());
+
+                TextView snippet = new TextView(context);
+                snippet.setTextColor(Color.GRAY);
+                snippet.setGravity(Gravity.CENTER);
+                snippet.setText(marker.getSnippet());
+
+                info.addView(title);
+                info.addView(snippet);
+
+                return info;
+            }
+        });
+
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, MAP_PERMISSION_ACCESS_FINE_LOCATION);
         } else {
-            getLastLocation();
-            getLocation();
-            displayLocation();
+            if(jaPegouLocalizacao == false) {
+                getLastLocation();
+                getLocation();
+                displayLocation();
+                jaPegouLocalizacao = true;
+            }
         }
 
 
@@ -116,7 +181,7 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
             @Override
             public void onMarkerDragEnd(Marker marker) {
                 localOcorrido = marker;
-                marker.setSnippet("Local do ocorrido");
+                txtMoverMarker.setVisibility(View.GONE);
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), (float) 14.5));
 
             }
@@ -142,7 +207,13 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
                 if(localOcorrido != null){
                     localOcorrido.remove();
                 }
-                localOcorrido = mMap.addMarker(new MarkerOptions().position(ondeEstou).title("Preciso de socorro!").draggable(true).icon(BitmapDescriptorFactory.fromResource( R.mipmap.ic_help)));
+                localOcorrido = mMap.addMarker(new MarkerOptions().position(ondeEstou).title(tipoAcidente).draggable(true).icon(BitmapDescriptorFactory.fromResource( R.mipmap.ic_help)));
+                //if(descricao == null || descricao.equals("")){
+                    localOcorrido.setSnippet("Local do ocorrido");
+                //}else {
+                //    localOcorrido.setSnippet(descricao);
+                //}
+                localOcorrido.showInfoWindow();
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ondeEstou, (float) 14.5));
                 verificaLastLocation = true;
             }
@@ -165,7 +236,13 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
                         if(localOcorrido != null){
                             localOcorrido.remove();
                         }
-                        localOcorrido = mMap.addMarker(new MarkerOptions().position(ondeEstou).title("Preciso de socorro!").draggable(true).icon(BitmapDescriptorFactory.fromResource( R.mipmap.ic_help)));
+                        localOcorrido = mMap.addMarker(new MarkerOptions().position(ondeEstou).title(tipoAcidente).draggable(true).icon(BitmapDescriptorFactory.fromResource( R.mipmap.ic_help)));
+                        //if(descricao == null || descricao.equals("")){
+                            localOcorrido.setSnippet("Local do ocorrido");
+                        //}else {
+                        //    localOcorrido.setSnippet(descricao);
+                        //}
+                        localOcorrido.showInfoWindow();
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ondeEstou, (float) 14.5));
                         verificaCurrentLocation = true;
                     }
@@ -236,13 +313,38 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
                             Bitmap resizedBitmap = Bitmap.createBitmap(snapshot, 0, 400, snapshot.getWidth(), 600);
 
                             ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                            resizedBitmap.compress(Bitmap.CompressFormat.PNG, 100, bao);
+                            resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bao);
                             resizedBitmap.recycle();
                             byte[] byteArray = bao.toByteArray();
                             String imageB64 = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                            String nomeImageB64Reduzido = imageB64.substring(0,2); // 70 é o numero limite de caracteres que o nome da imagem do storage pode ter.
 
-                            calltelaChat.putExtra("ImageB64", imageB64);
+                            //storage = FirebaseStorage.getInstance();
+                            //storageRef = storage.getReferenceFromUrl("gs://health-units.appspot.com/");
+                            mountainsRef = storageRef.child(nomeImageB64Reduzido+".jpg");
+
+                            UploadTask uploadTask = mountainsRef.putBytes(byteArray);
+                            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                                    //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                                    Toast.makeText(TelaLocaisPreChat.this,"upload done...",Toast.LENGTH_LONG).show();
+
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception exception) {
+                                    // Handle unsuccessful uploads
+                                    Toast.makeText(TelaLocaisPreChat.this,"Deu ruim...",Toast.LENGTH_LONG).show();
+
+                                }
+                            });
+
+                            calltelaChat.putExtra("ImageB64", nomeImageB64Reduzido);
                             calltelaChat.putExtra("TipoAcidente", tipoAcidente);
+                            calltelaChat.putExtra("Descricao", descricao);
+                            calltelaChat.putExtra("LocalOcorrido",localOcorrido.getPosition());
 
                             Toast.makeText(TelaLocaisPreChat.this, "Local capturado com sucesso!", Toast.LENGTH_LONG).show();
 
@@ -261,6 +363,8 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
             Toast.makeText(this, "Mapa não foi inicializado", Toast.LENGTH_LONG).show();
         }
     }
+
+
 
     /* ******************Localização com a LocationServices API******************************** */
 
@@ -306,7 +410,13 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
                 if(localOcorrido != null){
                     localOcorrido.remove();
                 }
-                localOcorrido = mMap.addMarker(new MarkerOptions().position(ondeEstou).title("Preciso de socorro!").draggable(true).icon(BitmapDescriptorFactory.fromResource( R.mipmap.ic_help)));
+                localOcorrido = mMap.addMarker(new MarkerOptions().position(ondeEstou).title(tipoAcidente).draggable(true).icon(BitmapDescriptorFactory.fromResource( R.mipmap.ic_help)));
+                //if(descricao == null || descricao.equals("")){
+                    localOcorrido.setSnippet("Local do ocorrido");
+                //}else {
+                //    localOcorrido.setSnippet(descricao);
+                //}
+                localOcorrido.showInfoWindow();
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ondeEstou, (float) 14.5));
                 verificaMoveCameraUmaUnicaVez = true;
             }

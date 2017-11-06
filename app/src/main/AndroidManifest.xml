@@ -83,7 +83,10 @@
             android:name=".telas.chat.TelaLocaisPreChat"
             android:label="@string/title_activity_tela_locais_pre_chat"
             android:theme="@style/AppTheme" />
-        <activity android:name=".telas.chat.TelaChat"></activity>
+        <activity android:name=".telas.chat.TelaChat" />
+        <activity android:name=".telas.chat.TelaDescricaoPreChat"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"/>
     </application>
 
 </manifest>

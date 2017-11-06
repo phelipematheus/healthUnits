@@ -21,8 +21,12 @@ public class ChatMessage {
         this.messageTime = new Date().getTime();
         this.messageBitmap = messageBitmap;
         this.temImagem = temImagem;
-        this.latitude = String.valueOf(latLng.latitude);
-        this.longitude = String.valueOf(latLng.longitude);
+        try {
+            this.latitude = String.valueOf(latLng.latitude);
+            this.longitude = String.valueOf(latLng.longitude);
+        }catch (Exception ex){
+
+        }
         this.tipoAcidente = tipoAcidente;
     }
 

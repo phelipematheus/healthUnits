@@ -4,8 +4,6 @@ package com.projetomobile.jpm.healthunits.adaptadores;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -20,12 +18,12 @@ import android.widget.TextView;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.projetomobile.jpm.healthunits.R;
 import com.projetomobile.jpm.healthunits.telas.TelaMaps;
 import com.projetomobile.jpm.healthunits.valueobject.ChatMessage;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -37,7 +35,6 @@ public class MyAdapterChat extends RecyclerView.Adapter<MyAdapterChat.ViewHolder
     private List<ChatMessage> values;
     private LatLng origem;
     private Context contextTelaChat;
-    private Bitmap bm;
 
     private FirebaseStorage storage;
     private StorageReference storageRef;
@@ -96,15 +93,13 @@ public class MyAdapterChat extends RecyclerView.Adapter<MyAdapterChat.ViewHolder
 
                 storage = FirebaseStorage.getInstance();
                 storageRef = storage.getReferenceFromUrl("gs://health-units.appspot.com/");
-                mountainsRef = storageRef.child(chatMessage.getMessageBitmap());
-                Task<Uri> httpRef = mountainsRef.getDownloadUrl();
-                
-                final long ONE_MEGABYTE = 64 * 64;
-                mountainsRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                mountainsRef = storageRef.child(chatMessage.getMessageBitmap()+".jpg");
+
+                mountainsRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
-                    public void onSuccess(byte[] bytes) {
-                        Bitmap bitmap= BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        bm = bitmap;
+                    public void onSuccess(Uri uri) {
+                        Uri downloadUrl = uri;
+                        Picasso.with(contextTelaChat).load(downloadUrl).into(holder.messageBitmap);
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -112,11 +107,6 @@ public class MyAdapterChat extends RecyclerView.Adapter<MyAdapterChat.ViewHolder
                         // Handle any errors
                     }
                 });
-                holder.messageBitmap.setImageBitmap(bm);
-
-                //Picasso.with(contextTelaChat).load("AQUI VAI A URL HTTP://...").into(holder.messageBitmap);
-
-
 
                 holder.messageBitmap.setOnClickListener(new View.OnClickListener() {
                     @Override

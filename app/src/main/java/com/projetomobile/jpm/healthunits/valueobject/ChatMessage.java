@@ -13,8 +13,9 @@ public class ChatMessage {
     private String temImagem;
     private String latitude;
     private String longitude;
+    private String tipoAcidente;
 
-    public ChatMessage(String messageText, String messageUser, String messageBitmap, String temImagem, LatLng latLng) {
+    public ChatMessage(String messageText, String messageUser, String messageBitmap, String temImagem, LatLng latLng, String tipoAcidente) {
         this.messageText = messageText;
         this.messageUser = messageUser;
         this.messageTime = new Date().getTime();
@@ -22,9 +23,18 @@ public class ChatMessage {
         this.temImagem = temImagem;
         this.latitude = String.valueOf(latLng.latitude);
         this.longitude = String.valueOf(latLng.longitude);
+        this.tipoAcidente = tipoAcidente;
     }
 
     public ChatMessage() {
+    }
+
+    public String getTipoAcidente() {
+        return tipoAcidente;
+    }
+
+    public void setTipoAcidente(String tipoAcidente) {
+        this.tipoAcidente = tipoAcidente;
     }
 
     public String getLatitude() {

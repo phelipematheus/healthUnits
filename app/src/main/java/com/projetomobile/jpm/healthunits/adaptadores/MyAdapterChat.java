@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -33,7 +32,6 @@ import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
 public class MyAdapterChat extends RecyclerView.Adapter<MyAdapterChat.ViewHolder>{
 
     private List<ChatMessage> values;
-    private LatLng origem;
     private Context contextTelaChat;
 
     private FirebaseStorage storage;
@@ -56,9 +54,8 @@ public class MyAdapterChat extends RecyclerView.Adapter<MyAdapterChat.ViewHolder
         }
     }
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapterChat(Context contextTelaChat, List<ChatMessage> myDataset, LatLng origem) {
+    public MyAdapterChat(Context contextTelaChat, List<ChatMessage> myDataset) {
         this.contextTelaChat = contextTelaChat;
-        this.origem = origem;
         values = myDataset;
     }
 
@@ -112,7 +109,7 @@ public class MyAdapterChat extends RecyclerView.Adapter<MyAdapterChat.ViewHolder
                     @Override
                     public void onClick(View v) {
                         Intent abreMapaComRota = new Intent(contextTelaChat, TelaMaps.class);
-                        abreMapaComRota.putExtra("MinhaLocalizacao", origem);
+                        abreMapaComRota.putExtra("TipoDoAcidente", chatMessage.getTipoAcidente());
                         abreMapaComRota.putExtra("LatitudeDestino", chatMessage.getLatitude());
                         abreMapaComRota.putExtra("LongitudeDestino", chatMessage.getLongitude());
                         contextTelaChat.startActivity(abreMapaComRota);

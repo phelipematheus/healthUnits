@@ -62,6 +62,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static com.projetomobile.jpm.healthunits.adaptadores.MyAdapterEstabelecimento.estabeleci;
 import static com.projetomobile.jpm.healthunits.adaptadores.MyAdapterEstabelecimento.tracaOrigem;
 import static com.projetomobile.jpm.healthunits.service.ControllerRetrofit.BASE_URL;
+import static com.projetomobile.jpm.healthunits.telas.chat.TelaChat.origem;
 
 public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  , GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -79,16 +80,16 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  , 
     private ControllerRetrofit controllerRetrofit = new ControllerRetrofit();
     private List<String> listEstab = new ArrayList<String>();
     private List<Estabelecimento> listEst = new ArrayList<Estabelecimento>();
-    public LatLng tracaRotaLocalOrigem, tracaRotaLocalDestino, tracaRotaLocalOrigemVerifica;
+    public LatLng tracaRotaLocalOrigem, tracaRotaLocalDestino, tracaRotaLocalOrigemVerifica, destino;
     private List<LatLng> listaRota;
     private long distancia;
     private Polyline polyline;
 
-    private Marker meuMarker;
+    private Marker meuMarker, localOcorrido;
     private boolean jaEntrouNoLastLocation = false;
 
     private LatLng minhaLocalizacao;
-    private String latitudeDestino, longitudeDestino;
+    private String latitudeDestino, longitudeDestino, tipoAcidente;
 
     private Location mLastLocation;
     private GoogleApiClient mGoogleApiClient;
@@ -237,6 +238,19 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  , 
             LatLng me = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
             if(jaEntrouNoLastLocation == false) {
                 tracaRotaLocalOrigem = me;
+
+                if(localOcorrido != null){
+                    localOcorrido.remove();
+                }
+                if(destino != null && tipoAcidente != null) {
+                    localOcorrido = mMap.addMarker(new MarkerOptions().position(destino).title(tipoAcidente).draggable(true).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_help)));
+                    localOcorrido.setSnippet("Local do ocorrido");
+                    if(origem != null){
+                        destino = new LatLng(Double.parseDouble(latitudeDestino),Double.parseDouble(longitudeDestino));
+                        getRoute(origem,destino);
+                    }
+                }
+
                 if(meuMarker != null){
                     meuMarker.remove();
                 }
@@ -280,6 +294,17 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  , 
                     tracaRotaLocalOrigem = me;
                     tracaRotaLocalOrigemVerifica = me;
                     //mMap.clear();
+                    if(localOcorrido != null){
+                        localOcorrido.remove();
+                    }
+                    if(destino != null && tipoAcidente != null) {
+                        localOcorrido = mMap.addMarker(new MarkerOptions().position(destino).title(tipoAcidente).draggable(true).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_help)));
+                        localOcorrido.setSnippet("Local do ocorrido");
+                        if(origem != null){
+                            destino = new LatLng(Double.parseDouble(latitudeDestino),Double.parseDouble(longitudeDestino));
+                            getRoute(origem,destino);
+                        }
+                    }
                     if(meuMarker != null){
                         meuMarker.remove();
                     }
@@ -386,11 +411,11 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  , 
         super.onResume();
         checkPlayServices();
         try{
-
-            if(getIntent().hasExtra("MinhaLocalizacao")){
+            if(getIntent().hasExtra("TipoDoAcidente")){
                 Bundle extras = getIntent().getExtras();
-                minhaLocalizacao = (LatLng) extras.get("MinhaLocalizacao");
+                tipoAcidente = (String) extras.get("TipoDoAcidente");
             }
+
             if(getIntent().hasExtra("LatitudeDestino")){
                 Bundle extras = getIntent().getExtras();
                 latitudeDestino = (String) extras.get("LatitudeDestino");
@@ -400,9 +425,9 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  , 
                 longitudeDestino = (String) extras.get("LongitudeDestino");
             }
 
-            if(minhaLocalizacao != null && latitudeDestino != null && longitudeDestino != null){
-                LatLng tracaDestino = new LatLng(Double.parseDouble(latitudeDestino),Double.parseDouble(longitudeDestino));
-                getRoute(minhaLocalizacao,tracaDestino);
+            if(origem != null){
+                destino = new LatLng(Double.parseDouble(latitudeDestino),Double.parseDouble(longitudeDestino));
+                getRoute(origem,destino);
             }
 
             LatLng tracaDestino = new LatLng(Double.parseDouble(String.valueOf(estabeleci.getLatitude())),Double.parseDouble(String.valueOf(estabeleci.getLongitude())));
@@ -575,6 +600,19 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  , 
 
             tracaRotaLocalOrigem = me;
             tracaRotaLocalOrigemVerifica = me;
+
+            if(localOcorrido != null){
+                localOcorrido.remove();
+            }
+            if(destino != null && tipoAcidente != null) {
+                localOcorrido = mMap.addMarker(new MarkerOptions().position(destino).title(tipoAcidente).draggable(true).icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_help)));
+                localOcorrido.setSnippet("Local do ocorrido");
+                if(origem != null){
+                    destino = new LatLng(Double.parseDouble(latitudeDestino),Double.parseDouble(longitudeDestino));
+                    getRoute(origem,destino);
+                }
+            }
+
             if(meuMarker != null){
                 meuMarker.remove();
             }

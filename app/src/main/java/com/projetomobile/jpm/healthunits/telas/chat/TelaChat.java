@@ -56,7 +56,8 @@ public class TelaChat extends AppCompatActivity implements OnMapReadyCallback, G
     private String temImagem, tipoAcidente, imageB64, descricao;
     private static int SIGN_IN_REQUEST_CODE = 1;
     private RelativeLayout activity_main;
-    private LatLng localOcorrido, origem;
+    private LatLng localOcorrido;
+    public static LatLng origem;
 
     private Location mLastLocation;
     private GoogleApiClient mGoogleApiClient;
@@ -107,10 +108,10 @@ public class TelaChat extends AppCompatActivity implements OnMapReadyCallback, G
                 public void onClick(DialogInterface arg0, int arg1) {
                     if(FirebaseAuth.getInstance().getCurrentUser().getEmail() == null) {
                         FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage("Preciso de socorro! "+descricao+"!",
-                                FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), imageB64, temImagem, localOcorrido));
+                                FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), imageB64, temImagem, localOcorrido, tipoAcidente));
                     }else {
                         FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage("Preciso de socorro! "+descricao+"!",
-                                FirebaseAuth.getInstance().getCurrentUser().getEmail(), imageB64, temImagem, localOcorrido));// Base de dados do firebase recebe a mensagem e o usuário que enviou
+                                FirebaseAuth.getInstance().getCurrentUser().getEmail(), imageB64, temImagem, localOcorrido, tipoAcidente));// Base de dados do firebase recebe a mensagem e o usuário que enviou
                     }
                     clicou = false;
                     imageB64 = null;
@@ -165,10 +166,10 @@ public class TelaChat extends AppCompatActivity implements OnMapReadyCallback, G
                 if(emojiconEditText.getText().toString() != null && emojiconEditText.getText().toString().equals("") == false) {
                     if (FirebaseAuth.getInstance().getCurrentUser().getEmail() == null) {
                         FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage(emojiconEditText.getText().toString(),
-                                FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), null, "2",null));
+                                FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), null, "2",null, null));
                     } else {
                         FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage(emojiconEditText.getText().toString(),
-                                FirebaseAuth.getInstance().getCurrentUser().getEmail(), null, "2", null));// Base de dados do firebase recebe a mensagem e o usuário que enviou
+                                FirebaseAuth.getInstance().getCurrentUser().getEmail(), null, "2", null, null));// Base de dados do firebase recebe a mensagem e o usuário que enviou
                     }
                     clicou = false;
                     imageB64 = null;
@@ -234,10 +235,8 @@ public class TelaChat extends AppCompatActivity implements OnMapReadyCallback, G
             getLocation();
             displayLocation();
         }
-        //if(origem != null && mLastLocation != null) {
-            adapter = new MyAdapterChat(TelaChat.this, items, origem);
-            listOfMessage.setAdapter(adapter);
-        //}
+        adapter = new MyAdapterChat(TelaChat.this, items);
+        listOfMessage.setAdapter(adapter);
     }
 
 
@@ -330,6 +329,7 @@ public class TelaChat extends AppCompatActivity implements OnMapReadyCallback, G
             double longitude = mLastLocation.getLongitude();
             LatLng me = new LatLng(latitude, longitude);
             origem = me;
+
             Log.e("Resposta","ESTA NO IF");
         } else {
             Log.e("RESPOSTA","ESTÁ NO ELSE");

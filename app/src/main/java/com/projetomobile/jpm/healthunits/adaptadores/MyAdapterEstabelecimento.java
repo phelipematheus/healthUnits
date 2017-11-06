@@ -56,7 +56,7 @@ public class MyAdapterEstabelecimento extends RecyclerView.Adapter<MyAdapterEsta
     public MyAdapterEstabelecimento(List<Estabelecimento> myDataset) {
         values = myDataset;
     }
-    
+
     @Override
     public MyAdapterEstabelecimento.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                    int viewType) {
@@ -75,8 +75,6 @@ public class MyAdapterEstabelecimento extends RecyclerView.Adapter<MyAdapterEsta
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
 
         final Estabelecimento estabelecimento = values.get(position);
         holder.txtHeader.setText(estabelecimento.getNomeFantasia());
@@ -96,7 +94,6 @@ public class MyAdapterEstabelecimento extends RecyclerView.Adapter<MyAdapterEsta
         holder.txtFooter.setText("Footer: " + estabelecimento.getDescricaoCompleta());
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return values.size();

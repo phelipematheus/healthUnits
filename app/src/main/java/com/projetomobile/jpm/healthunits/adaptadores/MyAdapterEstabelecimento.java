@@ -31,11 +31,8 @@ public class MyAdapterEstabelecimento extends RecyclerView.Adapter<MyAdapterEsta
     public static LatLng tracaOrigem;
     public static boolean verificaSePodeFinalizarActivity = false;
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
     public class ViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
+
         public TextView txtHeader;
         public TextView txtFooter;
         public Button btnGo;
@@ -51,12 +48,6 @@ public class MyAdapterEstabelecimento extends RecyclerView.Adapter<MyAdapterEsta
         }
     }
 
-    public void add(int position, Estabelecimento item) {
-        values.add(position, item);
-        notifyItemInserted(position);
-    }
-
-    // Provide a suitable constructor (depends on the kind of dataset)
     public MyAdapterEstabelecimento(Context contextListaEstabelecimento, List<Estabelecimento> myDataset, LatLng origem) {
         tracaOrigem = origem;
         this.contextListaEstabelecimento = contextListaEstabelecimento;
@@ -65,8 +56,7 @@ public class MyAdapterEstabelecimento extends RecyclerView.Adapter<MyAdapterEsta
     public MyAdapterEstabelecimento(List<Estabelecimento> myDataset) {
         values = myDataset;
     }
-
-    // Create new views (invoked by the layout manager)
+    
     @Override
     public MyAdapterEstabelecimento.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                    int viewType) {

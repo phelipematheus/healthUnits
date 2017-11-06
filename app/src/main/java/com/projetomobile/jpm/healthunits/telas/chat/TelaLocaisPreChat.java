@@ -10,11 +10,9 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -36,11 +34,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.projetomobile.jpm.healthunits.R;
 
 import java.io.ByteArrayOutputStream;
@@ -66,16 +59,10 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
     private Location mLastLocation;
     private GoogleApiClient mGoogleApiClient;
 
-    private StorageReference mStorage;
-
     public static boolean clicou = false;
     private boolean jaPegouLocalizacao = false;
 
     private String tipoAcidente, descricao;
-
-    private FirebaseStorage storage;
-    private StorageReference storageRef;
-    private StorageReference mountainsRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,10 +70,6 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
         setContentView(R.layout.tela_locais_pre_chat);
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        storage = FirebaseStorage.getInstance();
-        storageRef = storage.getReferenceFromUrl("gs://health-units.appspot.com/");
-        //mountainsRef = storageRef.child("mountains.jpg");
 
         if(getIntent().hasExtra("Descricao")){
             Bundle extras = getIntent().getExtras();
@@ -310,38 +293,12 @@ public class TelaLocaisPreChat extends AppCompatActivity implements OnMapReadyCa
                         try {
                             Intent calltelaChat = new Intent(TelaLocaisPreChat.this, TelaChat.class);
 
-                            Bitmap resizedBitmap = Bitmap.createBitmap(snapshot, 0, 400, snapshot.getWidth(), 600);
-
                             ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                            resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bao);
-                            resizedBitmap.recycle();
+                            snapshot.compress(Bitmap.CompressFormat.JPEG, 40, bao);
+                            snapshot.recycle();
                             byte[] byteArray = bao.toByteArray();
-                            String imageB64 = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                            String nomeImageB64Reduzido = imageB64.substring(0,2); // 70 é o numero limite de caracteres que o nome da imagem do storage pode ter.
 
-                            //storage = FirebaseStorage.getInstance();
-                            //storageRef = storage.getReferenceFromUrl("gs://health-units.appspot.com/");
-                            mountainsRef = storageRef.child(nomeImageB64Reduzido+".jpg");
-
-                            UploadTask uploadTask = mountainsRef.putBytes(byteArray);
-                            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                @Override
-                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                                    //Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                                    Toast.makeText(TelaLocaisPreChat.this,"upload done...",Toast.LENGTH_LONG).show();
-
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception exception) {
-                                    // Handle unsuccessful uploads
-                                    Toast.makeText(TelaLocaisPreChat.this,"Deu ruim...",Toast.LENGTH_LONG).show();
-
-                                }
-                            });
-
-                            calltelaChat.putExtra("ImageB64", nomeImageB64Reduzido);
+                            calltelaChat.putExtra("ByteArray", byteArray);
                             calltelaChat.putExtra("TipoAcidente", tipoAcidente);
                             calltelaChat.putExtra("Descricao", descricao);
                             calltelaChat.putExtra("LocalOcorrido",localOcorrido.getPosition());

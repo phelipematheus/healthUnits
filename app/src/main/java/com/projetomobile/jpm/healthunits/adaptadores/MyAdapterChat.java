@@ -96,7 +96,7 @@ public class MyAdapterChat extends RecyclerView.Adapter<MyAdapterChat.ViewHolder
                     @Override
                     public void onSuccess(Uri uri) {
                         Uri downloadUrl = uri;
-                        Picasso.with(contextTelaChat).load(downloadUrl).into(holder.messageBitmap);
+                        Picasso.with(contextTelaChat).load(downloadUrl).resize(1000, 600).centerCrop().into(holder.messageBitmap);
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override

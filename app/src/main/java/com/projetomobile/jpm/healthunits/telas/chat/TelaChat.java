@@ -10,6 +10,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -30,18 +31,24 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.projetomobile.jpm.healthunits.R;
 import com.projetomobile.jpm.healthunits.adaptadores.MyAdapterChat;
 import com.projetomobile.jpm.healthunits.dao.ConfiguracaoFirebase;
 import com.projetomobile.jpm.healthunits.valueobject.ChatMessage;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
@@ -53,7 +60,7 @@ import static com.projetomobile.jpm.healthunits.telas.chat.TelaLocaisPreChat.cli
 
 public class TelaChat extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
-    private String temImagem, tipoAcidente, imageB64, descricao;
+    private String temImagem, tipoAcidente, descricao;
     private static int SIGN_IN_REQUEST_CODE = 1;
     private RelativeLayout activity_main;
     private LatLng localOcorrido;
@@ -68,12 +75,21 @@ public class TelaChat extends AppCompatActivity implements OnMapReadyCallback, G
     ImageView emojiButton,submitButton;
     EmojIconActions emojIconActions;
 
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
+    private StorageReference mountainsRef;
+
+    private byte[] byteArray;
+
     private List<ChatMessage> items = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tela_chat);
+
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReferenceFromUrl("gs://health-units.appspot.com/");
 
         if(getIntent().hasExtra("TipoAcidente")){
             Bundle extras = getIntent().getExtras();
@@ -85,9 +101,9 @@ public class TelaChat extends AppCompatActivity implements OnMapReadyCallback, G
             descricao = (String) extras.get("Descricao");
         }
 
-        if(getIntent().hasExtra("ImageB64")){
+        if(getIntent().hasExtra("ByteArray")){
             Bundle extras = getIntent().getExtras();
-            imageB64 = (String) extras.get("ImageB64");
+            byteArray = (byte[]) extras.get("ByteArray");
         }
 
         if(getIntent().hasExtra("LocalOcorrido")){
@@ -106,15 +122,32 @@ public class TelaChat extends AppCompatActivity implements OnMapReadyCallback, G
             builder.setMessage("Deseja compartihar o local do acidente?");
             builder.setPositiveButton("SIM", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface arg0, int arg1) {
+
+                    String nameTime = String.valueOf(new Date().getTime());
+
+                    mountainsRef = storageRef.child(nameTime+".jpg");
+
+                    UploadTask uploadTask = mountainsRef.putBytes(byteArray);
+                    uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Toast.makeText(TelaChat.this,"upload done...",Toast.LENGTH_LONG).show();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            Toast.makeText(TelaChat.this,"Deu ruim...",Toast.LENGTH_LONG).show();
+                        }
+                    });
+
                     if(FirebaseAuth.getInstance().getCurrentUser().getEmail() == null) {
                         FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage("Preciso de socorro! "+descricao+"!",
-                                FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), imageB64, temImagem, localOcorrido, tipoAcidente));
+                                FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), nameTime, temImagem, localOcorrido, tipoAcidente));
                     }else {
                         FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage("Preciso de socorro! "+descricao+"!",
-                                FirebaseAuth.getInstance().getCurrentUser().getEmail(), imageB64, temImagem, localOcorrido, tipoAcidente));// Base de dados do firebase recebe a mensagem e o usuário que enviou
+                                FirebaseAuth.getInstance().getCurrentUser().getEmail(), nameTime, temImagem, localOcorrido, tipoAcidente));// Base de dados do firebase recebe a mensagem e o usuário que enviou
                     }
                     clicou = false;
-                    imageB64 = null;
                 }
             });
             builder.setNegativeButton("NÃO", new DialogInterface.OnClickListener() {
@@ -125,7 +158,6 @@ public class TelaChat extends AppCompatActivity implements OnMapReadyCallback, G
                     builder.setPositiveButton("SIM", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface arg0, int arg1) {
                             clicou = false;
-                            imageB64 = null;
                             Intent telaLocaisPreChat = new Intent(TelaChat.this,TelaLocaisPreChat.class);
                             startActivity(telaLocaisPreChat);
                             finish();
@@ -134,7 +166,6 @@ public class TelaChat extends AppCompatActivity implements OnMapReadyCallback, G
                     builder.setNegativeButton("NÃO", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface arg0, int arg1) {
                             clicou = false;
-                            imageB64 = null;
                         }
                     });
                     AlertDialog alerta = builder.create();
@@ -172,7 +203,6 @@ public class TelaChat extends AppCompatActivity implements OnMapReadyCallback, G
                                 FirebaseAuth.getInstance().getCurrentUser().getEmail(), null, "2", null, null));// Base de dados do firebase recebe a mensagem e o usuário que enviou
                     }
                     clicou = false;
-                    imageB64 = null;
                     emojiconEditText.setText("");// Zero o campo mensagem
                     emojiconEditText.requestFocus();// Volto o cursor para o campo de mensagem
                 }else {

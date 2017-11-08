@@ -11,7 +11,7 @@ import com.projetomobile.jpm.healthunits.R;
 
 public class TelaPreChat extends AppCompatActivity {
 
-    private Button btnAtropelamento, btnInfarte, btnConvulsao, btnPessoaBaleada;
+    private Button btnAtropelamento, btnInfarte, btnConvulsao, btnPessoaBaleada, btnDesmaio, btnDorNoPeito, btnEngasgo, btnAfogamento, btnAcidentePeconhento, btnAcidenteToxico, btnQueda, btnQueimadura;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,68 +21,61 @@ public class TelaPreChat extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         btnAtropelamento = (Button) findViewById(R.id.btn_atropelamento);
-        btnInfarte = (Button) findViewById(R.id.btn_infarte);
+        btnAtropelamento.setOnClickListener(new MyListenner());
+
         btnConvulsao = (Button) findViewById(R.id.btn_convulsao);
+        btnConvulsao.setOnClickListener(new MyListenner());
+
+        btnDesmaio = (Button) findViewById(R.id.btn_desmaio);
+        btnDesmaio.setOnClickListener(new MyListenner());
+
+        btnDorNoPeito = (Button) findViewById(R.id.btn_dor_peito);
+        btnDorNoPeito.setOnClickListener(new MyListenner());
+
+        btnEngasgo = (Button) findViewById(R.id.btn_engasgo);
+        btnEngasgo.setOnClickListener(new MyListenner());
+
+        btnAfogamento = (Button) findViewById(R.id.btn_afogamento);
+        btnAfogamento.setOnClickListener(new MyListenner());
+
+        btnAcidentePeconhento = (Button) findViewById(R.id.btn_acidente_peconhento);
+        btnAcidentePeconhento.setOnClickListener(new MyListenner());
+
+        btnAcidenteToxico = (Button) findViewById(R.id.btn_acidente_toxico);
+        btnAcidenteToxico.setOnClickListener(new MyListenner());
+
+        btnQueda = (Button) findViewById(R.id.btn_queda);
+        btnQueda.setOnClickListener(new MyListenner());
+
         btnPessoaBaleada = (Button) findViewById(R.id.btn_pessoa_baleada);
+        btnPessoaBaleada.setOnClickListener(new MyListenner());
 
-        chamaAtropelamento();
-        chamaInfarte();
-        chamaConvulsao();
-        chamaPessoaBaleada();
+        btnInfarte = (Button) findViewById(R.id.btn_infarte);
+        btnInfarte.setOnClickListener(new MyListenner());
+
+        btnQueimadura = (Button) findViewById(R.id.btn_queimadura);
+        btnQueimadura.setOnClickListener(new MyListenner());
+
     }
 
-    private void chamaAtropelamento() {
-        btnAtropelamento.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Intent callTelaDescricaoPreChat = new Intent(TelaPreChat.this,TelaDescricaoPreChat.class);
-                callTelaDescricaoPreChat.putExtra("TipoAcidente", "Atropelamento");
-                startActivity(callTelaDescricaoPreChat);
-                finish();
-            }
-        });
+    public void escolhaPreChat(Button escolha) {
+        Intent callTelaDescricaoPreChat = new Intent(TelaPreChat.this, TelaDescricaoPreChat.class);
+        callTelaDescricaoPreChat.putExtra("TipoAcidente", escolha.getText().toString());
+        startActivity(callTelaDescricaoPreChat);
     }
-
-    private void chamaInfarte() {
-        btnInfarte.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Intent callTelaDescricaoPreChat = new Intent(TelaPreChat.this,TelaDescricaoPreChat.class);
-                callTelaDescricaoPreChat.putExtra("TipoAcidente", "Infarte");
-                startActivity(callTelaDescricaoPreChat);
-                finish();
-            }
-        });
-    }
-
-    private void chamaConvulsao() {
-        btnConvulsao.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Intent callTelaDescricaoPreChat = new Intent(TelaPreChat.this,TelaDescricaoPreChat.class);
-                callTelaDescricaoPreChat.putExtra("TipoAcidente", "Convulsão");
-                startActivity(callTelaDescricaoPreChat);
-                finish();
-            }
-        });
-    }
-
-    private void chamaPessoaBaleada() {
-        btnPessoaBaleada.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Intent callTelaDescricaoPreChat = new Intent(TelaPreChat.this,TelaDescricaoPreChat.class);
-                callTelaDescricaoPreChat.putExtra("TipoAcidente", "Pessoa Baleada");
-                startActivity(callTelaDescricaoPreChat);
-                finish();
-            }
-        });
-    }
-
-
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+    private class MyListenner implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            Button btnAtropelamento2 = (Button) view;
+            Intent callTelaDescricaoPreChat = new Intent(TelaPreChat.this, TelaDescricaoPreChat.class);
+            callTelaDescricaoPreChat.putExtra("TipoAcidente", btnAtropelamento2.getText().toString());
+            startActivity(callTelaDescricaoPreChat);
+        }
     }
 }

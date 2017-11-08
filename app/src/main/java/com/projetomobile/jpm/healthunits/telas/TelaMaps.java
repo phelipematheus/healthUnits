@@ -195,7 +195,6 @@ public class TelaMaps extends FragmentActivity implements OnMapReadyCallback  , 
             public void onClick(View view) {
                 Intent callTelaListaEstabelecimento = new Intent(TelaMaps.this, TelaListaEstabelecimento.class);
                 startActivity(callTelaListaEstabelecimento);
-                finish();
             }
         });
     }

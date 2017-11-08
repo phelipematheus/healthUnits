@@ -41,13 +41,77 @@
         android:textColor="#FFFFFF"
         app:backgroundTint="#00a6ff"/>
 
-    <android.support.v7.widget.AppCompatButton
+    <Button
+        android:id="@+id/btn_desmaio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Desmaio"
+        android:textColor="#FFFFFF"
+        app:backgroundTint="#00a6ff"/>
+
+
+    <Button
+        android:id="@+id/btn_dor_peito"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Dor no peito"
+        android:textColor="#FFFFFF"
+        app:backgroundTint="#00a6ff"/>
+
+    <Button
+        android:id="@+id/btn_engasgo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Engasgo"
+        android:textColor="#FFFFFF"
+        app:backgroundTint="#00a6ff"/>
+
+    <Button
+        android:id="@+id/btn_afogamento"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Afogamento"
+        android:textColor="#FFFFFF"
+        app:backgroundTint="#00a6ff"/>
+
+    <Button
+        android:id="@+id/btn_acidente_peconhento"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Acidente com animal peçonhento"
+        android:textColor="#FFFFFF"
+        app:backgroundTint="#00a6ff"/>
+
+    <Button
+        android:id="@+id/btn_acidente_toxico"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Acidente com residuos toxicos"
+        android:textColor="#FFFFFF"
+        app:backgroundTint="#00a6ff"/>
+
+    <Button
+        android:id="@+id/btn_queda"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Queda"
+        android:textColor="#FFFFFF"
+        app:backgroundTint="#00a6ff"/>
+
+    <Button
+        android:id="@+id/btn_queimadura"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Queimadura"
+        android:textColor="#FFFFFF"
+        app:backgroundTint="#00a6ff"/>
+
+    <Button
         android:id="@+id/btn_pessoa_baleada"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Pessoa Baleada"
         android:textColor="#FFFFFF"
         app:backgroundTint="#00a6ff"/>
-
 
 </LinearLayout>

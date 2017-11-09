@@ -106,14 +106,17 @@ public class TelaListaEstabelecimento extends AppCompatActivity implements OnMap
             @Override
             public void onResponse(Call<List<Estabelecimento>> call, Response<List<Estabelecimento>> response) {
 
+                mAdapter = new MyAdapterEstabelecimento(TelaListaEstabelecimento.this, listEst,origem);
                 if(response.isSuccessful()){
                     for(Estabelecimento e : response.body()){
                         listEst.add(e);
 
                     }
 
+                    mAdapter.notifyDataSetChanged();
+
                     if(origem != null) {
-                        mAdapter = new MyAdapterEstabelecimento(TelaListaEstabelecimento.this, listEst,origem);
+
                         Log.e("", "Funcionou");
                         recyclerView.setAdapter(mAdapter);
                     }

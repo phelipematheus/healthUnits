@@ -9,6 +9,8 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:paddingTop="16dp"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     tools:context="com.projetomobile.jpm.healthunits.telas.chat.TelaChat">
 
     <ImageView

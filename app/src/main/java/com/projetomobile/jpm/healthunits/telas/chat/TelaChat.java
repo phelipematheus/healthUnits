@@ -223,14 +223,16 @@ public class TelaChat extends AppCompatActivity implements OnMapReadyCallback, G
                 Snackbar.make(activity_main,"Welcome "+FirebaseAuth.getInstance().getCurrentUser().getEmail(),Snackbar.LENGTH_SHORT).show();
             }
             //Load content
-            displayChatMessage();
+
         }
     }
+
+
 
     private void displayChatMessage() {
 
         RecyclerView listOfMessage = (RecyclerView)findViewById(R.id.list_of_message);
-        RecyclerView.Adapter adapter;
+        final RecyclerView.Adapter adapter = new MyAdapterChat(TelaChat.this, items);
 
         listOfMessage.setHasFixedSize(true);
 
@@ -246,7 +248,8 @@ public class TelaChat extends AppCompatActivity implements OnMapReadyCallback, G
                     ChatMessage chatMessage = postSnapshot.getValue(ChatMessage.class);
                     items.add(chatMessage);
                 }
-
+                // Reload na lista
+                adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -265,7 +268,6 @@ public class TelaChat extends AppCompatActivity implements OnMapReadyCallback, G
             getLocation();
             displayLocation();
         }
-        adapter = new MyAdapterChat(TelaChat.this, items);
         listOfMessage.setAdapter(adapter);
     }
 
@@ -371,6 +373,7 @@ public class TelaChat extends AppCompatActivity implements OnMapReadyCallback, G
         if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
         }
+        displayChatMessage();
     }
     @Override
     protected void onResume() {
